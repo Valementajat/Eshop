@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import './App.css';
+import '../css/App.css';
 import { Button, Container, TextField, Grid } from '@mui/material';
-import { fetchData, insertData, deleteData, updateData } from './Api';
-import CardComponent from './CardComponent';
+import { fetchData, insertData, deleteData, updateData } from '../api/Api';
+import CardComponent from '../components/CardComponent';
 
 class App extends Component {
   constructor(props) {
