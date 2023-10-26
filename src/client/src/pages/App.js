@@ -3,6 +3,7 @@ import '../css/App.css';
 import { Button, Container, TextField, Grid } from '@mui/material';
 import { fetchData, insertData, deleteData, updateData } from '../api/Api';
 import CardComponent from '../components/CardComponent';
+import { Link } from 'react-router-dom';
 
 class App extends Component {
   constructor(props) {
@@ -62,6 +63,8 @@ class App extends Component {
       return <div>Loading...</div>;
     }
 
+  
+
     return (
       <div className='App'>
         <div className='form'>
@@ -78,7 +81,14 @@ class App extends Component {
               remove={this.remove}
             />
           </Grid>
+
         </Container>
+        <Link to="/login">
+          <Button className='my-2' variant="contained">
+            Go to Login
+          </Button>
+        </Link>
+
       </div>
     );
   }
