@@ -28,7 +28,7 @@ CREATE TABLE `product` (
   `description` varchar(50),
   `picture` varchar(50),
   `tags` varchar(50),
-  `deprecated` tinyint(1) NOT NULL,
+  `deprecated` tinyint(1),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
