@@ -7,7 +7,7 @@ const db = mysql.createPool({
   host: 'mysql_db',
   user: 'MYSQL_USER',
   password: 'MYSQL_PASSWORD',
-  database: 'books'
+  database: 'eshop'
 });
 
 app.use(cors());
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/get', (req, res) => {
-  const selectQuery = 'SELECT * FROM books_reviews';
+  const selectQuery = 'SELECT * FROM product';
   db.query(selectQuery, (err, result) => {
     if (err) {
       res.status(500).send(err);
@@ -30,10 +30,10 @@ app.get('/get', (req, res) => {
 });
 
 app.post('/insert', (req, res) => {
-  const bookName = req.body.setBookName;
-  const bookReview = req.body.setReview;
-  const insertQuery = 'INSERT INTO books_reviews (book_name, book_review) VALUES (?, ?)';
-  db.query(insertQuery, [bookName, bookReview], (err, result) => {
+  const id = req.body.setBookName;
+  const name = req.body.setReview;
+  const insertQuery = 'INSERT INTO product (id, name) VALUES (?, ?)';
+  db.query(insertQuery, [id, name], (err, result) => {
     if (err) {
       res.status(500).send(err);
     } else {
@@ -44,9 +44,9 @@ app.post('/insert', (req, res) => {
 });
 
 app.delete('/delete/:Id', (req, res) => {
-  const bookId = req.params.Id;
-  const deleteQuery = 'DELETE FROM books_reviews WHERE id = ?';
-  db.query(deleteQuery, bookId, (err, result) => {
+  const id = req.params.Id;
+  const deleteQuery = 'DELETE FROM product WHERE id = ?';
+  db.query(deleteQuery, id, (err, result) => {
     if (err) {
       res.status(500).send(err);
     } else {

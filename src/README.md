@@ -45,13 +45,13 @@
     and add
 
     ```bash
-     function make() {
+    function make() {
         case $1 in
             "up")
                 docker-compose up --build
                 ;;
             "schema")
-                docker-compose exec api /bin/sh -c "npm run schema:generate"
+                docker-compose exec mysql_db mysqldump -uMYSQL_USER -pMYSQL_PASSWORD eshop > setup.sql
                 ;;
             "down")
                 docker-compose down
@@ -59,12 +59,28 @@
             "check")
                 docker ps
                 ;;
+            "rebuild-api")
+                docker-compose up --no-deps --build -d api
+                ;;
+            "rebuild-nginx")
+                docker-compose up --no-deps --build -d nginx
+                ;;
+            "rebuild-client")
+                docker-compose up --no-deps --build -d client
+                ;;  
+            "rebuild-db")
+                docker-compose up --no-deps --build -d mysql_db
+                ;;
+            "stop")
+                docker-compose stop
+                ;;
             # Add more cases for other custom commands here
             *)
-                echo "Command not found. Available commands: build, schema, kill, check"
+                echo "Command not found. Available commands: up, schema, down, check, rebuild-api, rebuild-nginx, rebuild-client, rebuild-db, stop"
                 ;;
         esac
     }
+
     ```
     Save the file and run `source ~/.bashrc` to apply the changes. Now, you can use the `make` command followed by your custom command, e.g., `make build` or `make schema`.
 
