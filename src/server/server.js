@@ -58,7 +58,7 @@ app.post('/user/register', async (req, res) => {
   // Store the token in the session for demonstration purposes (in a real app, you might store it differently)
   req.session.token = token;
 
-  res.json({ message: 'Account created successfuly', token });
+  res.json({ message: 'Account created successfuly', token, name, email });
 });
 
 // Login endpoint
@@ -66,12 +66,14 @@ app.post('/user/login', async (req, res) => {
   const { email, password } = req.body;
 
   // Check for the provided email and password
-  const [user] = await db.promise().query('SELECT * FROM user WHERE email = ? AND password = ?', [email, password]);
+  const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND password = ?', [email, password]);
 
-  if (user.length > 0) {
-    const token = jwt.sign({ id: user[0].id, email: user[0].email }, jwt_token);
+  if (users.length > 0) {
+    let user = users[0];
+    const token = jwt.sign({ id: user.id, email: user.email }, jwt_token);
     req.session.token = token;
-    res.json({ message: 'Login successful', token });
+
+    res.json({ message: 'Login successful', token, name:user.name, surname:user.surname, email:user.email });
   } else {
     res.status(401).json({ message: 'Login failed' });
   }
