@@ -25,9 +25,9 @@ DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `description` varchar(50) NOT NULL,
-  `picture` varchar(50) DEFAULT NULL,
-  `tags` varchar(50) NOT NULL,
+  `description` varchar(50),
+  `picture` varchar(50),
+  `tags` varchar(50),
   `deprecated` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
