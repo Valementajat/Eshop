@@ -49,14 +49,14 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
+CREATE TABLE `user` ( 
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `surname` varchar(50) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `surname` varchar(50) DEFAULT NULL,
   `password` varchar(50) NOT NULL,
-  `address` varchar(50) NOT NULL,
-  `creditcard` varchar(50) NOT NULL,
-  `email` varchar(50) DEFAULT NULL,
+  -- `address` varchar(50) DEFAULT NULL,
+  -- `creditcard` varchar(50) DEFAULT NULL, 
+  `email` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
