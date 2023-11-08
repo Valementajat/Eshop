@@ -12,6 +12,19 @@ export const loginUser = (data) => {
   return axios.post('/api/user/login', data);
 };
 
+export const updateUser = (data) => {
+  const headers = { Authorization: `Bearer ${data.token}` };
+  console.log('Token:', data.token);
+
+  return axios.put('/api/user/update', data, {headers});
+};
+
+export const deleteUser = (data) => {
+  const headers = { Authorization: `Bearer ${data.token}` };
+
+  return axios.delete('/api/user/delete', {headers});
+};
+
 export const insertData = (data) => {
   return axios.post('/api/insert', data);
 };

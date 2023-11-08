@@ -96,25 +96,37 @@ class App extends Component {
               >
                 Log Out
               </Button>
+              <Link to="account">
+                <Button
+                  className="my-2"
+                  variant="contained"
+                >
+                  Manage Account
+                </Button>
+              </Link>
             </div>
           )}
         </div>
-        <div className="form">
-          <TextField
-            name="setBookName"
-            label="Enter Book Name"
-            onChange={this.handleChange}
-          />
-          <TextField
-            name="setReview"
-            label="Enter Review!!"
-            onChange={this.handleChange}
-          />
-        </div>
-        <Button className="my-2" variant="contained" onClick={this.submit}>
-          Submit
-        </Button>{" "}
+       { user && user.role != "user" && (
+         <div>
+          <div className="form">
+            <TextField
+              name="setBookName"
+              label="Enter Book Name"
+              onChange={this.handleChange}
+            />
+            <TextField
+              name="setReview"
+              label="Enter Review!!"
+              onChange={this.handleChange}
+            />
+          </div>
+          <Button className="my-2" variant="contained" onClick={this.submit}>
+            Submit
+          </Button>{" "}
+        </div>)}
         <br />
+        <hr />
         <br />
         <Container>
           <Grid container spacing={2}>

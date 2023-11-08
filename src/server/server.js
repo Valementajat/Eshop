@@ -58,7 +58,7 @@ app.post('/user/register', async (req, res) => {
   // Store the token in the session for demonstration purposes (in a real app, you might store it differently)
   req.session.token = token;
 
-  res.json({ message: 'Account created successfuly', token, name, email });
+  res.json({ message: 'Account created successfuly', token, name, surname, email, role:'user' });
 });
 
 // Login endpoint
@@ -72,10 +72,54 @@ app.post('/user/login', async (req, res) => {
     let user = users[0];
     const token = jwt.sign({ id: user.id, email: user.email }, jwt_token);
     req.session.token = token;
-
-    res.json({ message: 'Login successful', token, name:user.name, surname:user.surname, email:user.email });
+    console.log(user)
+    res.json({ message: 'Login successful', token, name:user.name, surname:user.surname, email:user.email, role:user.role });
   } else {
     res.status(401).json({ message: 'Login failed' });
+  }
+});
+
+// Update user endpoint
+
+app.put('/user/update', async (req, res) => {
+  const { token, name, surname, email, password } = req.body;
+
+  try {
+    // Verify the token
+    const decodedToken = jwt.verify(token, jwt_token);
+    console.log(decodedToken);
+    if (password != "") {
+      // Update user information based on the decoded token
+      await db.promise().query('UPDATE user SET name = ?, surname = ?, email = ?, password = ? WHERE id = ?', [name, surname, email, password, decodedToken.id]);
+    } else {
+      await db.promise().query('UPDATE user SET name = ?, surname = ?, email = ? WHERE id = ?', [name, surname, email, decodedToken.id]);
+
+    }
+    // Fetch updated user details
+    const [updatedUser] = await db.promise().query('SELECT * FROM user WHERE id = ?', [decodedToken.id]);
+
+    res.json({ message: 'User updated successfully', user: updatedUser[0] });
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
+app.delete('/user/delete', async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+
+
+  try {
+    // Verify the token
+    const decodedToken = jwt.verify(token, jwt_token);
+
+
+    // Delete user based on the decoded token
+    await db.promise().query('DELETE FROM user WHERE id = ?', [decodedToken.id]);
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    res.status(401).json({ message: 'Unauthorized' });
   }
 });
 

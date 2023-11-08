@@ -39,11 +39,11 @@ class Login extends Component {
       }
 
       const res = await loginUser({ email:this.state.email, password:this.state.password });
-      const {name, surname, email, token} = res.data;
+      const {name, surname, email, token, role} = res.data;
       console.log(res);
 
       //console.log(name, surname, email, token);
-      localStorage.setItem('user', JSON.stringify({token, name, surname, email}));
+      localStorage.setItem('user', JSON.stringify({token, name, surname, email, role}));
 
       // Reset error state on successful log-in
       this.setState({ error: null });
