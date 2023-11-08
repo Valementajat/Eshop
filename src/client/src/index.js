@@ -4,6 +4,9 @@ import { createRoot } from 'react-dom/client';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './pages/App';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import Account from './pages/Account';
+import AccountUpdate from './pages/AccountUpdate';
 
 const root = createRoot(document.getElementById('root'));
 
@@ -12,6 +15,10 @@ root.render(
     <Routes>
       <Route exact path="/" element={<App />} />
       <Route exact path="/login" element={<Login />} />
+      <Route exact path="/signup" element={<Register />} />
+      <Route exact path="/account" element={<Account />} />
+      <Route exact path="/account/update" element={<AccountUpdate />} />
+
     </Routes>
   </Router>
 );
