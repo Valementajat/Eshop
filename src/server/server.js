@@ -72,7 +72,6 @@ app.post('/user/login', async (req, res) => {
     let user = users[0];
     const token = jwt.sign({ id: user.id, email: user.email }, jwt_token);
     req.session.token = token;
-    console.log(user)
     res.json({ message: 'Login successful', token, name:user.name, surname:user.surname, email:user.email, role:user.role });
   } else {
     res.status(401).json({ message: 'Login failed' });
@@ -87,7 +86,6 @@ app.put('/user/update', async (req, res) => {
   try {
     // Verify the token
     const decodedToken = jwt.verify(token, jwt_token);
-    console.log(decodedToken);
     if (password != "") {
       // Update user information based on the decoded token
       await db.promise().query('UPDATE user SET name = ?, surname = ?, email = ?, password = ? WHERE id = ?', [name, surname, email, password, decodedToken.id]);
@@ -149,7 +147,6 @@ app.post('/insert', (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      console.log(result);
       res.status(200).send('Inserted successfully');
     }
   });

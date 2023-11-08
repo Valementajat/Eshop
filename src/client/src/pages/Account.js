@@ -64,9 +64,7 @@ class Account extends Component {
             Update Account
           </Button>
         </Link>
-        <Button variant="contained">
-          Delete Account
-        </Button>
+        
       </div>
     );
   }

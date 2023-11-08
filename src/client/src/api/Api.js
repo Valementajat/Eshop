@@ -14,7 +14,6 @@ export const loginUser = (data) => {
 
 export const updateUser = (data) => {
   const headers = { Authorization: `Bearer ${data.token}` };
-  console.log('Token:', data.token);
 
   return axios.put('/api/user/update', data, {headers});
 };
