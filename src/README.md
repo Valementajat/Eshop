@@ -67,19 +67,39 @@
                 ;;
             "rebuild-client")
                 docker-compose up --no-deps --build -d client
-                ;;  
+                ;;
             "rebuild-db")
                 docker-compose up --no-deps --build -d mysql_db
                 ;;
             "stop")
                 docker-compose stop
                 ;;
-            # Add more cases for other custom commands here
+            "npm-install-client")
+                docker-compose run client npm install
+                ;;
+            "npm-install-api")
+                docker-compose run api npm install
+                ;;
+            "--help")
+                echo "Available commands:"
+                echo "up: Starts the services with docker-compose."
+                echo "schema: Executes a MySQL dump of 'eshop' database into setup.sql."
+                echo "down: Stops the services with docker-compose."
+                echo "check: Displays the running containers with 'docker ps'."
+                echo "rebuild-api: Rebuilds the 'api' service with docker-compose."
+                echo "rebuild-nginx: Rebuilds the 'nginx' service with docker-compose."
+                echo "rebuild-client: Rebuilds the 'client' service with docker-compose."
+                echo "rebuild-db: Rebuilds the 'mysql_db' service with docker-compose."
+                echo "stop: Stops all running containers with docker-compose."
+                echo "npm-install-client: Installs npm dependencies for the 'client' service."
+                echo "npm-install-api: Installs npm dependencies for the 'api' service."
+                ;;
             *)
-                echo "Command not found. Available commands: up, schema, down, check, rebuild-api, rebuild-nginx, rebuild-client, rebuild-db, stop"
+                echo "Command not found. Use 'make --help' to see available commands."
                 ;;
         esac
     }
+
 
     ```
     Save the file and run `source ~/.bashrc` to apply the changes. Now, you can use the `make` command followed by your custom command, e.g., `make build` or `make schema`.
