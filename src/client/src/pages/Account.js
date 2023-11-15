@@ -29,6 +29,7 @@ class Account extends Component {
     window.location.replace("/login");
  };
 
+
  render() {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -61,23 +62,18 @@ class Account extends Component {
             Update Account
           </Button>
         </Link>
-        
+        <br/>
+
+        <Button className="my-button-increase" variant="contained">
+      Increase
+    </Button><Button variant="contained">
+        Decrease
+      </Button> 
       </div>
     );
  }
-
- render() {
-  return (
-     <div className="login-container">
-
-       <button onClick={this.handleButton1Click}>Increase</button>
-
-       <button onClick={this.handleButton2Click}>Decrease</button>
-
-       <div>{this.state.text}</div>
-     </div>
-  );
- }
 }
+
+
 
 export default Account;
