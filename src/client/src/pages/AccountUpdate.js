@@ -80,9 +80,11 @@ class AccountUpdate extends Component {
     const { name, surname, email, password } = this.state;
 
     try {
+      //Get info from the local storage
       const localUser = JSON.parse(localStorage.getItem("user")); 
       const res = await updateUser({ name, surname, email, password, token:localUser.token });
       const token = res.data.token;
+      //We save the info to see if someone is logged in 
       localStorage.setItem(
         "user",
         JSON.stringify({ token, name, surname, email, role: res.data.role })

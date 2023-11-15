@@ -39,7 +39,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'s',NULL,NULL,NULL,NULL),(2,'test',NULL,NULL,NULL,NULL),(3,'f',NULL,NULL,NULL,NULL),(4,'a',NULL,NULL,NULL,NULL),(5,'<',NULL,NULL,NULL,NULL);
+INSERT INTO `product` VALUES (1,'d',NULL,NULL,NULL,NULL),(2,'a',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -58,7 +58,7 @@ CREATE TABLE `user` (
   `email` varchar(50) NOT NULL,
   `role` enum('admin','user','moderator') NOT NULL DEFAULT 'user',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin@gmail.com','admin1','admin','admin@gmail.com','admin'),(2,'Johannes','Takamäki','test','johannesTest@gmail.com','user'),(3,'test','test','test','test@gmail.com','user');
+INSERT INTO `user` VALUES (1,'admin@gmail.com','admin1','admin','admin@gmail.com','admin'),(2,'Johannes','Takamäki','test','johannesTest@gmail.com','user'),(3,'test','test','test','test@gmail.com','user'),(4,'test','test','tset','tesat@gmail.com','user'),(5,'Johannes','Takamäki','A','josku123@gmail.com','user');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -80,4 +80,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-15 12:04:38
+-- Dump completed on 2023-11-15 14:05:10

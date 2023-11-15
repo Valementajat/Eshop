@@ -88,6 +88,8 @@ class App extends Component {
               ) : (
                 user.email && <span>Hello, {user.email}</span>
               )}
+              <br />
+              
               <Button
                 className="my-2"
                 variant="contained"

@@ -2,17 +2,18 @@ import axios from 'axios';
 
 export const fetchData = () => {
   return axios.get("/api/get");
-};
+}; //Get data
 
 export const registerUser = (data) => {
   return axios.post('/api/user/register', data);
-};
+}; //Change data
 
 export const loginUser = (data) => {
   return axios.post('/api/user/login', data);
 };
 
 export const updateUser = (data) => {
+  //Getting the user info
   const headers = { Authorization: `Bearer ${data.token}` };
 
   return axios.put('/api/user/update', data, {headers});
