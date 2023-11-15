@@ -25,12 +25,12 @@ DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `description` varchar(50),
-  `picture` varchar(50),
-  `tags` varchar(50),
-  `deprecated` tinyint(1),
+  `description` varchar(50) DEFAULT NULL,
+  `picture` varchar(50) DEFAULT NULL,
+  `tags` varchar(50) DEFAULT NULL,
+  `deprecated` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,6 +39,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
+INSERT INTO `product` VALUES (1,'s',NULL,NULL,NULL,NULL),(2,'test',NULL,NULL,NULL,NULL),(3,'f',NULL,NULL,NULL,NULL),(4,'a',NULL,NULL,NULL,NULL),(5,'<',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -49,7 +50,7 @@ UNLOCK TABLES;
 DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` ( 
+CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
   `surname` varchar(50) DEFAULT NULL,
@@ -57,7 +58,7 @@ CREATE TABLE `user` (
   `email` varchar(50) NOT NULL,
   `role` enum('admin','user','moderator') NOT NULL DEFAULT 'user',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,35 +67,9 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'admin@gmail.com','admin1','admin','admin@gmail.com','admin'),(2,'Johannes','Takamäki','test','johannesTest@gmail.com','user'),(3,'test','test','test','test@gmail.com','user');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
-
-
---
--- Table structure for table `user_roles`
---
-
--- DROP TABLE IF EXISTS `user_roles`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
--- CREATE TABLE `user_roles` (
---   `id` int NOT NULL AUTO_INCREMENT,
---   `user_id` int NOT NULL,
---   `role` enum('admin','user','moderator') NOT NULL,
---   PRIMARY KEY (`id`),
---   KEY `user_id` (`user_id`),
---   CONSTRAINT `user_roles_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `user_roles`
---
-
--- LOCK TABLES `user_roles` WRITE;
-/*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
--- UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -105,4 +80,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-26 15:18:15
+-- Dump completed on 2023-11-15 12:04:38
