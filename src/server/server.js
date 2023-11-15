@@ -152,6 +152,20 @@ app.post('/insert', (req, res) => {
   });
 });
 
+app.put('/update/:id', (req, res) => {
+  const id = req.params.id;
+  const updatedReview = req.body.reviewUpdate;
+
+  const updateQuery = 'UPDATE product SET name = ? WHERE id = ?';
+  db.query(updateQuery, [updatedReview, id], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Updated successfully');
+    }
+  });
+});
+
 app.delete('/delete/:Id', (req, res) => {
   const id = req.params.Id;
   const deleteQuery = 'DELETE FROM product WHERE id = ?';

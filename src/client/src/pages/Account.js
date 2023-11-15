@@ -66,18 +66,7 @@ class Account extends Component {
     );
  }
 
- render() {
-  return (
-     <div className="login-container">
-
-       <button onClick={this.handleButton1Click}>Increase</button>
-
-       <button onClick={this.handleButton2Click}>Decrease</button>
-
-       <div>{this.state.text}</div>
-     </div>
-  );
- }
+ 
 }
 
 export default Account;

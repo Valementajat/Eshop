@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../css/App.css";
 import { Button, Container, TextField, Grid } from "@mui/material";
-import { fetchData, insertData, deleteData, updateData } from "../api/Api";
+import { fetchData, deleteData, updateData, insertData } from "../api/Api";
 import CardComponent from "../components/CardComponent";
 import { Link } from "react-router-dom";
 
@@ -14,6 +14,7 @@ class App extends Component {
       fetchData: [],
       reviewUpdate: "",
       user: { name: "", surname: "", isAdmin: false, email: "" },
+      showProductForm: false, // New state to show the product form
     };
   }
 
@@ -43,19 +44,16 @@ class App extends Component {
   }
 
   logout = () => {
-    // Remove the user from local storage
     localStorage.removeItem('user');
-
-    // Optionally, redirect the user to the login page or another page
     window.location.replace('/login');
   };
 
   submit = () => {
-    insertData(this.state).then(() => {
-      alert("success post");
-    });
+    insertData(this.state)
+      .then(() => { alert('success post') });
     console.log(this.state);
     document.location.reload();
+
   };
 
   remove = (id) => {
@@ -76,13 +74,14 @@ class App extends Component {
     }
 
     const user = this.state.user;
+    const { showProductForm } = this.state;
 
     return (
       <div className="App">
         <div>
           {user && (
             <div>
-              {user.name != "" || user.surname != "" ? (
+              {user.name !== "" || user.surname !== "" ? (
                 <span>
                   Hello, {user.name} {user.surname}
                 </span>
@@ -107,24 +106,31 @@ class App extends Component {
             </div>
           )}
         </div>
-       { user && user.role != "user" && (
-         <div>
+        {user && user.role === "admin" && (
           <div className="form">
             <TextField
               name="setBookName"
-              label="Enter Book Name"
+              label="Enter Name"
+              value={this.state.setBookName}
               onChange={this.handleChange}
             />
             <TextField
               name="setReview"
               label="Enter Review!!"
+              value={this.state.setReview}
               onChange={this.handleChange}
             />
+            <Button
+              className="my-2"
+              variant="contained"
+              onClick={this.submit}
+            >
+              Submit
+            </Button>
+            <br />
           </div>
-          <Button className="my-2" variant="contained" onClick={this.submit}>
-            Submit
-          </Button>{" "}
-        </div>)}
+        )}
+       
         <br />
         <hr />
         <br />
@@ -135,6 +141,7 @@ class App extends Component {
               handleChange2={this.handleChange2}
               edit={this.edit}
               remove={this.remove}
+              user={user}
             />
           </Grid>
         </Container>
