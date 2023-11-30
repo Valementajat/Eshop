@@ -27,8 +27,9 @@ CREATE TABLE `Cart` (
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `state` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `cost` int NOT NULL,
+  `user_id` int NOT NULL,
   PRIMARY KEY (`ID`),
-  CONSTRAINT `fk_user_cart` FOREIGN KEY (`ID`) REFERENCES `user` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_user_cart` FOREIGN KEY (`user_id`) REFERENCES `user` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -44,16 +45,22 @@ UNLOCK TABLES;
 --
 -- Table structure for table `CartItem`
 --
-
 DROP TABLE IF EXISTS `CartItem`;
+
+
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `CartItem` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `counts` smallint NOT NULL,
   `costs` smallint NOT NULL,
+  `cart_ID` int NOT NULL,
+  `product_ID` int NOT NULL,
+
   PRIMARY KEY (`ID`),
-  CONSTRAINT `fk_Cart_Cartitem` FOREIGN KEY (`ID`) REFERENCES `Cart` (`ID`) ON DELETE CASCADE
+  CONSTRAINT `fk_Cart_Cartitem` FOREIGN KEY (`cart_ID`) REFERENCES `Cart` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_Product_Cartitem` FOREIGN KEY (`product_ID`) REFERENCES `product` (`id`) ON DELETE CASCADE
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -77,8 +84,10 @@ CREATE TABLE `OrderLine` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `orderDate` date NOT NULL,
   `cost` float NOT NULL,
+  `order_ID` int NOT NULL,
+
   PRIMARY KEY (`ID`),
-  CONSTRAINT `fk_Orders_OrderLine` FOREIGN KEY (`ID`) REFERENCES `Orders` (`ID`) ON DELETE CASCADE
+  CONSTRAINT `fk_Orders_OrderLine` FOREIGN KEY (`order_ID`) REFERENCES `Orders` (`ID`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -103,7 +112,11 @@ CREATE TABLE `Orders` (
   `orderDate` date NOT NULL,
   `state` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `cost` int NOT NULL,
-  PRIMARY KEY (`ID`)
+  `user_ID` int NOT NULL,
+
+  PRIMARY KEY (`ID`),
+  CONSTRAINT `fk_User_Orders` FOREIGN KEY (`user_ID`) REFERENCES `User` (`id`) ON DELETE CASCADE
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -158,6 +171,9 @@ CREATE TABLE `user` (
   `password` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
   `role` enum('admin','user','moderator') NOT NULL DEFAULT 'user',
+  `activated` BOOLEAN NOT NULL DEFAULT FALSE,
+  `verification_token` varchar(50) NOT NULL,
+
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
