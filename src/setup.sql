@@ -25,12 +25,12 @@ DROP TABLE IF EXISTS `Cart`;
 CREATE TABLE `Cart` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `state` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `cost` int NOT NULL,
   `user_id` int NOT NULL,
   PRIMARY KEY (`ID`),
+  KEY `fk_user_cart` (`user_id`),
   CONSTRAINT `fk_user_cart` FOREIGN KEY (`user_id`) REFERENCES `user` (`ID`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,15 +39,15 @@ CREATE TABLE `Cart` (
 
 LOCK TABLES `Cart` WRITE;
 /*!40000 ALTER TABLE `Cart` DISABLE KEYS */;
+INSERT INTO `Cart` VALUES (1,'Johannes1',120,11),(2,'Johannes2',111,11),(3,'takamaki1',1244,11);
 /*!40000 ALTER TABLE `Cart` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Table structure for table `CartItem`
 --
+
 DROP TABLE IF EXISTS `CartItem`;
-
-
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `CartItem` (
@@ -56,12 +56,12 @@ CREATE TABLE `CartItem` (
   `costs` smallint NOT NULL,
   `cart_ID` int NOT NULL,
   `product_ID` int NOT NULL,
-
   PRIMARY KEY (`ID`),
+  KEY `fk_Cart_Cartitem` (`cart_ID`),
+  KEY `fk_Product_Cartitem` (`product_ID`),
   CONSTRAINT `fk_Cart_Cartitem` FOREIGN KEY (`cart_ID`) REFERENCES `Cart` (`ID`) ON DELETE CASCADE,
   CONSTRAINT `fk_Product_Cartitem` FOREIGN KEY (`product_ID`) REFERENCES `product` (`id`) ON DELETE CASCADE
-
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,6 +70,7 @@ CREATE TABLE `CartItem` (
 
 LOCK TABLES `CartItem` WRITE;
 /*!40000 ALTER TABLE `CartItem` DISABLE KEYS */;
+INSERT INTO `CartItem` VALUES (1,2,234,2,1),(2,1,123,2,2),(3,23,525,2,5),(4,2,51,2,6),(5,2,123,1,5),(6,2,123,1,15);
 /*!40000 ALTER TABLE `CartItem` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -82,12 +83,14 @@ DROP TABLE IF EXISTS `OrderLine`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `OrderLine` (
   `ID` int NOT NULL AUTO_INCREMENT,
-  `orderDate` date NOT NULL,
   `cost` float NOT NULL,
   `order_ID` int NOT NULL,
-
+  `product_ID` int NOT NULL,
   PRIMARY KEY (`ID`),
-  CONSTRAINT `fk_Orders_OrderLine` FOREIGN KEY (`order_ID`) REFERENCES `Orders` (`ID`) ON DELETE CASCADE
+  KEY `fk_Orders_OrderLine` (`order_ID`),
+  CONSTRAINT `fk_Orders_OrderLine` FOREIGN KEY (`order_ID`) REFERENCES `Orders` (`ID`) ON DELETE CASCADE,
+  CONSTRAINT `fk_Product_OrderLine` FOREIGN KEY (`product_ID`) REFERENCES `product` (`id`) ON DELETE CASCADE
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -113,10 +116,9 @@ CREATE TABLE `Orders` (
   `state` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `cost` int NOT NULL,
   `user_ID` int NOT NULL,
-
   PRIMARY KEY (`ID`),
-  CONSTRAINT `fk_User_Orders` FOREIGN KEY (`user_ID`) REFERENCES `User` (`id`) ON DELETE CASCADE
-
+  KEY `fk_User_Orders` (`user_ID`),
+  CONSTRAINT `fk_User_Orders` FOREIGN KEY (`user_ID`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -145,7 +147,7 @@ CREATE TABLE `product` (
   `deprecated` tinyint(1) DEFAULT NULL,
   `price` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -154,6 +156,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
+INSERT INTO `product` VALUES (1,'Sata Fé - Peru','Coffee from peru',NULL,'beans',NULL,7.5),(2,'Castillo - Colombia','Coffee beans',NULL,'beans',NULL,7.9),(3,'Decaf Don Jebrile - México','Coffee beans',NULL,'beans',NULL,7.92),(4,'Decaf Chiapas - México','Coffee beans',NULL,'beans',NULL,7.95),(5,'Los Montres - Brazil','Coffee beans',NULL,'beans',NULL,8.47),(6,'Huila - Colombia','Coffee beans',NULL,'beans',NULL,8.69),(7,'Baho - Ruanda','Coffee beans',NULL,'beans',NULL,8.47),(8,'FEMALE PRODUCERS, HUEHUETENANGO - GUATEMALA','Coffee beans',NULL,'beans',NULL,8.95),(9,'NAZARETH´S FORMULA II - CARMO DE MINAS, BRAZIL','Coffee beans',NULL,'beans',NULL,9),(10,'CACAO BOMB - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(11,'KETIARA WOMEN\'S COOPERATIVE - SUMATRA','Coffee beans',NULL,'beans',NULL,8.95),(12,'VALLE DEL MANTARO - PERU','Coffee beans',NULL,'beans',NULL,9.9),(13,'YELLOW CATURRA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.9),(14,'ZANCADA - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(15,'SAN JOSÉ, INZA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.95);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -171,11 +174,10 @@ CREATE TABLE `user` (
   `password` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
   `role` enum('admin','user','moderator') NOT NULL DEFAULT 'user',
-  `activated` BOOLEAN NOT NULL DEFAULT FALSE,
+  `activated` tinyint(1) NOT NULL DEFAULT '0',
   `verification_token` varchar(50) NOT NULL,
-
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,7 +186,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'admin','admin1','admin','admin@gmail.com','admin'),(2,'test','user','user','test@mail','user'),(3,'test','test','test','test','user'),(4,'Joel','moderator','test','moderator@test','moderator'),(5,'Joel','Mira Moltó','test','test','admin');
+INSERT INTO `user` VALUES (11,'Johannes','Takamäki','d','josku123@gmail.com','user',1,'3f679dd90fab332229b9723b325127889e859687');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -197,4 +199,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-29 15:48:35
+-- Dump completed on 2023-12-04 14:22:44

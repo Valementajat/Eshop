@@ -4,6 +4,17 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const session = require('express-session');
 
+const emailSender = require('./emailSender');
+
+//example of the mail options 
+/* var mailOptions = {
+  from: 'noreplyeshop2@gmail.com',
+  to: 'eaxample@gmail.com',
+  subject: 'Order Confirmation',
+  text: 'Thank you for your order! We will notify you once your order is shipped.'
+}; 
+emailSender.sendEmail(mailOptions);
+*/
 const app = express();
 const jwt_token = 'MyFuckingBestSecretKeyThatIEverInvented822*áýčěšíádhwqěšdhqáí._ˇˇ%ů¨§';
 
@@ -49,7 +60,8 @@ app.post('/user/register', async (req, res) => {
   }
 
   // Create a new user
-  await db.promise().query('INSERT INTO user (name, surname, email, password) VALUES (?, ?, ?, ?)', [name, surname, email, password]);
+  const userVerificationToken = emailSender.newUser();
+  await db.promise().query('INSERT INTO user (name, surname, email, password, verification_token) VALUES (?, ?, ?, ?, ?)', [name, surname, email, password, userVerificationToken]);
 
   // Assuming successful registration, generate a JWT token
   const [newUser] = await db.promise().query('SELECT * FROM user WHERE email = ?', [email]);
@@ -57,7 +69,8 @@ app.post('/user/register', async (req, res) => {
 
   // Store the token in the session for demonstration purposes (in a real app, you might store it differently)
   req.session.token = token;
-
+  //Send a verification email
+  emailSender.sendEmail(emailSender.generateVerificationEmail(newUser[0].email, userVerificationToken));
   res.json({ message: 'Account created successfuly', token, name, surname, email, role:'user' });
 });
 
@@ -69,16 +82,47 @@ app.post('/user/login', async (req, res) => {
   const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND password = ?', [email, password]);
 
   if (users.length > 0) {
-    let user = users[0];
-    const token = jwt.sign({ id: user.id, email: user.email }, jwt_token);
-    req.session.token = token;
-    res.json({ message: 'Login successful', token, name:user.name, surname:user.surname, email:user.email, role:user.role });
+     if(users[0].activated){
+      let user = users[0];
+      const token = jwt.sign({ id: user.id, email: user.email }, jwt_token);
+      req.session.token = token;
+      res.json({ message: 'Login successful', token, name:user.name, surname:user.surname, email:user.email, role:user.role, id:user.id });
+    } else {
+      res.status(402).json({ message: 'Not_Verified' });
+    }
   } else {
     res.status(401).json({ message: 'Login failed' });
   }
 });
 
 // Update user endpoint
+app.post('/user/verifyEmail', async (req, res) => {
+  const { email, token } = req.body;
+
+  try {
+    // Check if the email and verification token match in the database
+    const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [email, token]);
+
+    if (users.length > 0) {
+      const user = users[0];
+
+      if (user.activated) {
+        // If the account is already activated, send back a 401 error
+        return res.status(401).json({ message: 'Account already activated' });
+      }
+
+      // Update the 'activated' field to true
+      await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, email]);
+
+      res.json({ message: 'Verification successful' });
+    } else {
+      res.status(400).json({ message: 'Invalid verification details' });
+    }
+  } catch (error) {
+    console.error('Error occurred during verification:', error);
+    res.status(500).json({ message: 'Error verifying email' });
+  }
+});
 
 app.put('/user/update', async (req, res) => {
   const { token, name, surname, email, password } = req.body;
@@ -120,6 +164,61 @@ app.delete('/user/delete', async (req, res) => {
     res.status(401).json({ message: 'Unauthorized' });
   }
 });
+
+// Modify the backend route to retrieve userId from query params
+app.get('/user/getUserCarts', async (req, res) => {
+  let { userId } = req.query; // Get the userId from query parameter
+  
+  try {
+    // Fetch user carts information using JOIN operation among Cart, CartItem, and product tables
+    const [carts] = await db.promise().query('SELECT * FROM Cart WHERE user_id = ?', [userId.userId]);
+
+    res.json({  carts }); // Respond with the fetched carts
+
+  } catch (error) {
+    console.error('Exception occurred while fetching user carts:', error);
+    res.status(501).json({ error: 'Exception occurred while fetching user carts' });
+  } 
+});
+
+app.get('/user/createUserOrder', async (req, res) => {
+  const { id } = req.query;
+ 
+  
+
+  try {
+    // Fetch cart details using the provided cartId
+    const [cart] = await db.promise().query('SELECT * FROM Cart WHERE ID = ?', [id.id]);
+console.log(id.UserId);
+    // Create a new order based on the fetched cart details
+    const [result] = await db
+      .promise()
+      .query('INSERT INTO Orders (orderDate, state, cost, user_ID) VALUES (NOW(), ?, ?, ?)', [
+        'Pending',
+        cart[0].cost,
+        id.UserId,
+      ]);
+
+      const orderId = result.insertId; // Newly created order ID
+
+    // Fetch cart items associated with the cartId
+    const [cartItems] = await db.promise().query('SELECT * FROM CartItem WHERE cart_ID = ?', [id.id]);
+
+    // Insert each cart item into the OrderLine table
+    for (const cartItem of cartItems) {
+      await db.promise().query(
+        'INSERT INTO OrderLine ( cost, order_ID, product_ID) VALUES (?, ?, ?)',
+        [cartItem.costs, orderId, cartItem.product_ID]
+      );
+    }
+
+    res.json({ orderId });
+  } catch (error) {
+    console.error('Exception occurred while creating user order:', error);
+    res.status(501).json({ error: 'Exception occurred while creating user order' });
+  }
+});
+
 
 app.get('/', (req, res) => {
   res.send('Hi There');

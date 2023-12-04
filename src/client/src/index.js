@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Account from './pages/Account';
 import AccountUpdate from './pages/AccountUpdate';
+import VerifyEmail from './pages/VerifyEmail';
 
 const root = createRoot(document.getElementById('root'));
 
@@ -15,6 +16,8 @@ root.render(
     <Routes>
       <Route exact path="/" element={<App />} />
       <Route exact path="/login" element={<Login />} />
+      <Route exact path="/verify/:email/:token" element={<VerifyEmail />} />
+
       <Route exact path="/signup" element={<Register />} />
       <Route exact path="/account" element={<Account />} />
       <Route exact path="/account/update" element={<AccountUpdate />} />
