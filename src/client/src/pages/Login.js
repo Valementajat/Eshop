@@ -39,10 +39,11 @@ class Login extends Component {
       }
 
       const res = await loginUser({ email:this.state.email, password:this.state.password });
-      const {name, surname, email, token, role} = res.data;
+      
+      const {name, surname, email, token, role, id} = res.data;
 
       //console.log(name, surname, email, token);
-      localStorage.setItem('user', JSON.stringify({token, name, surname, email, role}));
+      localStorage.setItem('user', JSON.stringify({token, name, surname, email, role, id}));
 
       // Reset error state on successful log-in
       this.setState({ error: null });
@@ -54,6 +55,8 @@ class Login extends Component {
       if (error.response) {
         if (error.response.status === 401) {
           this.setState({ error: 'Invalid email or password.' });
+        } else if (error.response.status === 402){
+          this.setState({ error: 'Email not verified.' });
         } else {
           this.setState({ error: 'Login failed. Please try again later.' });
         }

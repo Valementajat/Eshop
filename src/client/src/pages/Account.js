@@ -1,36 +1,49 @@
 import React, { Component } from "react";
-import { Button, TextField, Alert } from "@mui/material";
+import { Button, Grid, Container } from "@mui/material";
 import { Link } from "react-router-dom";
+import { getUserCarts, createUserOrder } from "../api/Api";
+import CartDataTable from "../components/CartTable";
 
 class Account extends Component {
- constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
       message: null,
+      carts: [], // Initialize carts state
     };
     const localUser = JSON.parse(localStorage.getItem("user"));
 
     if (!localUser || !localUser.token) {
       window.location.replace("/");
-    } 
- }
+    }
+  }
 
- handleInputChange = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
- };
-
- logout = () => {
-    // Remove the user from local storage
-    localStorage.removeItem("user");
-
-    // Optionally, redirect the user to the login page or another page
-    window.location.replace("/login");
- };
-
- render() {
+  async componentDidMount() {
     const user = JSON.parse(localStorage.getItem("user"));
+    try {
+      getUserCarts({userId : user.id}).then((response) => {
+       
+        this.setState({
+          carts: response.data.carts,
+         
+        });
+       console.log(response.data.carts);
+      });
+    } catch (error) {
+      console.error('Error fetching user carts:', error);
+    }
+  }
+
+  logout = () => {
+    localStorage.removeItem("user");
+    window.location.replace("/login");
+  };
+
+ 
+
+  render() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const { carts } = this.state; // Destructure carts from state
 
     return (
       <div className="login-container">
@@ -56,17 +69,26 @@ class Account extends Component {
         <Button className="my-2" variant="contained" onClick={this.logout}>
           Log Out
         </Button>
+
         <Link to="/account/update">
           <Button variant="contained">
             Update Account
           </Button>
         </Link>
-        
+        <br />
+        <br />
+
+        <br />
+        {/* {!carts && ( */}
+        <Container>
+         
+            {/* Pass data and createOrder function to CartComponent */}
+            <CartDataTable carts={carts}/>
+        </Container>
+         {/* )} */}
       </div>
     );
- }
-
- 
+  }
 }
 
 export default Account;
