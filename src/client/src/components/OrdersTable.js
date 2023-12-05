@@ -1,29 +1,27 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import * as React from "react";
+import PropTypes from "prop-types";
+import { alpha } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 // import DeleteIcon from '@mui/icons-material/Delete';
 // import FilterListIcon from '@mui/icons-material/FilterList';
-import { visuallyHidden } from '@mui/utils';
-import { Button} from "@mui/material";
-import {  createUserOrder } from "../api/Api";
-
+import { visuallyHidden } from "@mui/utils";
+import { Button } from "@mui/material";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -36,7 +34,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -54,8 +52,14 @@ function stableSort(array, comparator) {
 }
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -70,26 +74,26 @@ function EnhancedTableHead(props) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all desserts',
+              "aria-label": "select all desserts",
             }}
           />
         </TableCell>
         {props.headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? "right" : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -100,12 +104,11 @@ function EnhancedTableHead(props) {
   );
 }
 
-
 EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
+  order: PropTypes.oneOf(["asc", "desc"]).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
   headCells: PropTypes.arrayOf(
@@ -119,24 +122,25 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-    const { numSelected, selected, handleCreateOrder } = props;
-
-
- 
+  const { numSelected, selected, handleRedirectToOrderDetails } = props;
+  
   return (
     <Toolbar
-      sx={{
+    sx={{
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
+          alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+              ),
+            }),
+          }}
+          >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+        sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
@@ -145,39 +149,41 @@ function EnhancedTableToolbar(props) {
         </Typography>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
-        >
-          Carts
+          >
+          Orders
         </Typography>
       )}
 
-      {numSelected > 0 ? (
+      {numSelected > 1 ? (
         <>
-            <Tooltip title="Delete">
+          <Tooltip title="Delete">
             <IconButton>
               Delete
-               {/* <DeleteIcon /> */}
+              {/* <DeleteIcon /> */}
             </IconButton>
-            </Tooltip>
-            {numSelected === 1 && (
-            <Button variant="contained" onClick={handleCreateOrder}>
-              Create Order
+          </Tooltip>
+        </>
+      ) : numSelected === 1 ? (
+        <>
+          <Tooltip title="Update order">
+            <Button variant="contained" onClick={handleRedirectToOrderDetails}>
+              Update Order
             </Button>
-          )}
+          </Tooltip>
         </>
       ) : (
-        
-        <Tooltip title="Filter list">
-          <IconButton>
-            Filter
-            {/* <FilterListIcon /> */}
-          </IconButton>
-        </Tooltip>
-        
-      
+        <>
+          <Tooltip title="Delete">
+            <IconButton>
+              Filter
+              {/* <FilterItemIcon /> */}
+            </IconButton>
+          </Tooltip>
+        </>
       )}
     </Toolbar>
   );
@@ -187,67 +193,58 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function CartTable({ carts }) {
-  const rows = carts || [];
+export default function OrdersTable({ orders }) {
+  const rows = orders || [];
+  
+  const handleRedirectToOrderDetails = () => {
+    const selectedOrderId = selected[0]; // Get the ID of the selected order
+    window.location.replace("/admin/orders/"+selectedOrderId);
+  }
   
   const headCells = [
     {
-      id: 'ID',
+      id: "ID",
       numeric: true,
       disablePadding: false,
-      label: 'ID',
+      label: "ID",
     },
     {
-      id: 'name',
+      id: "orderDate",
       numeric: false,
       disablePadding: false,
-      label: 'Name',
+      label: "Order Date",
     },
- 
     {
-      id: 'cost',
+      id: "state",
+      numeric: false,
+      disablePadding: false,
+      label: "State",
+    },
+    {
+      id: "cost",
       numeric: true,
       disablePadding: false,
-      label: 'Cost',
+      label: "Cost",
     },
     //For admins maybe?
-    /* {
-      id: 'user_id',
+    {
+      id: "user_ID",
       numeric: true,
       disablePadding: false,
-      label: 'User ID',
-    }, */
+      label: "User ID",
+    },
   ];
-  const handleCreateOrder = async () => {
-    // Logic to create an order based on the selected cart
-    const row = rows[selected[0]];
 
-    const selectedCartId = selected[0]; // Get the ID of the selected cart
-    console.log('Creating order for cart ID:', selectedCartId);
-    // Implement the order creation logic here using selectedCartId
-  
-        try{
-            const res = await createUserOrder({id : parseInt(selectedCartId), UserId: row.user_id}).then((response) => {
-           
-        console.log(response);
-      });
-    } catch (error) {
-      console.error('Error fetching user carts:', error);
-    }
-    
-     
-  };
-  
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [order, setOrder] = React.useState("asc");
+  const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -272,13 +269,11 @@ export default function CartTable({ carts }) {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
   };
-
-
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -302,24 +297,24 @@ export default function CartTable({ carts }) {
     () =>
       stableSort(rows, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
+        page * rowsPerPage + rowsPerPage
       ),
     [order, orderBy, page, rowsPerPage, rows]
   );
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-      <EnhancedTableToolbar
-      numSelected={selected.length}
-      selected={selected}
-      handleCreateOrder={handleCreateOrder}
-    />
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          selected={selected}
+          handleRedirectToOrderDetails={handleRedirectToOrderDetails}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size={dense ? "small" : "medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -344,14 +339,14 @@ export default function CartTable({ carts }) {
                     tabIndex={-1}
                     key={row.ID}
                     selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
+                    sx={{ cursor: "pointer" }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
                         inputProps={{
-                          'aria-labelledby': labelId,
+                          "aria-labelledby": labelId,
                         }}
                       />
                     </TableCell>
@@ -361,8 +356,8 @@ export default function CartTable({ carts }) {
                         component="th"
                         id={labelId}
                         scope="row"
-                        padding={cell.disablePadding ? 'none' : 'normal'}
-                        align={cell.numeric ? 'right' : 'left'}
+                        padding={cell.disablePadding ? "none" : "normal"}
+                        align={cell.numeric ? "right" : "left"}
                       >
                         {row[cell.id]}
                       </TableCell>
@@ -372,7 +367,7 @@ export default function CartTable({ carts }) {
                         color="primary"
                         checked={isItemSelected}
                         inputProps={{
-                          'aria-labelledby': labelId,
+                          "aria-labelledby": labelId,
                         }}
                       />
                     </TableCell>

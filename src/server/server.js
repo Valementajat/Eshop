@@ -71,7 +71,7 @@ app.post('/user/register', async (req, res) => {
   req.session.token = token;
   //Send a verification email
   emailSender.sendEmail(emailSender.generateVerificationEmail(newUser[0].email, userVerificationToken));
-  res.json({ message: 'Account created successfuly', token, name, surname, email, role:'user' });
+  res.json({ message: 'Account created successfuly', token, name, surname, email, role:'user', id:newUser[0].id });
 });
 
 // Login endpoint
@@ -180,6 +180,104 @@ app.get('/user/getUserCarts', async (req, res) => {
     res.status(501).json({ error: 'Exception occurred while fetching user carts' });
   } 
 });
+async function verifyAdmin(token) {
+  const decodedToken = jwt.verify(token, jwt_token);
+  const [users] = await db.promise().query('SELECT * FROM user WHERE id = ?', [decodedToken.id]);
+  return users.length > 0;
+
+}
+
+
+app.get('/admin/getOrderInfo', async (req, res) => {
+  let { token, orderId } = req.query; // Get the userId from query parameter
+  if (!verifyAdmin(token)) {
+    res.status(501).json({error: "Unauthorized"})
+    return;
+  };
+  try {
+    // Fetch orders information using JOIN operation among Cart, CartItem, and product tables
+    const [orders] = await db.promise().query('SELECT * FROM Orders WHERE ID=?', [orderId]);
+    if (orders.length != 1) {
+      res.status(501).json({error: "non-valid order number"});
+      return;
+    }
+    let order = orders[0];
+
+    const [orderLinesWithProducts] = await db.promise().query(`
+    SELECT OrderLine.*, product.*
+    FROM OrderLine
+    JOIN product ON OrderLine.product_ID = product.ID
+    WHERE OrderLine.order_ID = ?
+  `, [order.ID]);
+  
+    order = {...order, items:orderLinesWithProducts};
+    console.log(order)
+
+    res.json({ order }); // Respond with the fetched orders
+
+  } catch (error) {
+    console.error('Exception occurred while fetching user orders:', error);
+    res.status(501).json({ error: 'Exception occurred while fetching user orders' });
+  } 
+});
+
+
+app.get('/admin/getOrderProductsItems', async (req, res) => {
+  let { token, orderId } = req.query; // Get the userId from query parameter
+  if (!verifyAdmin(token)) {
+    res.status(501).json({error: "Unauthorized"})
+    return;
+  } ;
+  try {
+    // Fetch orders information using JOIN operation among Cart, CartItem, and product tables
+    const [orders] = await db.promise().query('SELECT * FROM Orders WHERE');
+
+    res.json({ orders }); // Respond with the fetched orders
+
+  } catch (error) {
+    console.error('Exception occurred while fetching user orders:', error);
+    res.status(501).json({ error: 'Exception occurred while fetching user orders' });
+  } 
+});
+
+app.get('/admin/getAllOrders', async (req, res) => {
+  let { token } = req.query; // Get the userId from query parameter
+  if (!verifyAdmin(token)) {
+    res.status(501).json({error: "Unauthorized"})
+    return;
+  } ;
+  try {
+    // Fetch orders information using JOIN operation among Cart, CartItem, and product tables
+    const [orders] = await db.promise().query('SELECT * FROM Orders');
+
+    res.json({ orders }); // Respond with the fetched orders
+
+  } catch (error) {
+    console.error('Exception occurred while fetching user orders:', error);
+    res.status(501).json({ error: 'Exception occurred while fetching user orders' });
+  } 
+});
+
+app.put('/admin/updateOrderState/:id', (req, res) => {
+  const id = req.params.id;
+  const state = req.data.orderState;
+  const token = req.headers.authorization.split(' ')[1];
+
+  if (!verifyAdmin(token)) {
+
+    res.status(501).send("Unauthorized");
+    return
+  }
+
+  const updateQuery = 'UPDATE Order SET state = ? WHERE id = ?';
+  db.query(updateQuery, [state, id], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send('Updated successfully');
+    }
+  });
+});
 
 app.get('/user/createUserOrder', async (req, res) => {
   const { id } = req.query;
@@ -194,7 +292,7 @@ console.log(id.UserId);
     const [result] = await db
       .promise()
       .query('INSERT INTO Orders (orderDate, state, cost, user_ID) VALUES (NOW(), ?, ?, ?)', [
-        'Pending',
+        0,
         cart[0].cost,
         id.UserId,
       ]);
@@ -220,9 +318,6 @@ console.log(id.UserId);
 });
 
 
-app.get('/', (req, res) => {
-  res.send('Hi There');
-});
 
 
 

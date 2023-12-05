@@ -39,7 +39,7 @@ CREATE TABLE `Cart` (
 
 LOCK TABLES `Cart` WRITE;
 /*!40000 ALTER TABLE `Cart` DISABLE KEYS */;
-INSERT INTO `Cart` VALUES (1,'Johannes1',120,11),(2,'Johannes2',111,11),(3,'takamaki1',1244,11);
+INSERT INTO `Cart` VALUES (1,'Johannes1',120,12),(2,'Johannes2',111,12),(3,'takamaki1',1244,12);
 /*!40000 ALTER TABLE `Cart` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -88,10 +88,10 @@ CREATE TABLE `OrderLine` (
   `product_ID` int NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `fk_Orders_OrderLine` (`order_ID`),
+  KEY `fk_Product_OrderLine` (`product_ID`),
   CONSTRAINT `fk_Orders_OrderLine` FOREIGN KEY (`order_ID`) REFERENCES `Orders` (`ID`) ON DELETE CASCADE,
   CONSTRAINT `fk_Product_OrderLine` FOREIGN KEY (`product_ID`) REFERENCES `product` (`id`) ON DELETE CASCADE
-
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,6 +100,7 @@ CREATE TABLE `OrderLine` (
 
 LOCK TABLES `OrderLine` WRITE;
 /*!40000 ALTER TABLE `OrderLine` DISABLE KEYS */;
+INSERT INTO `OrderLine` VALUES (1,123,1,5),(2,123,1,15),(3,234,2,1),(4,123,2,2),(5,525,2,5),(6,51,2,6);
 /*!40000 ALTER TABLE `OrderLine` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,13 +114,13 @@ DROP TABLE IF EXISTS `Orders`;
 CREATE TABLE `Orders` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `orderDate` date NOT NULL,
-  `state` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `state` enum('Pending', 'Paid', 'Invoiced', 'In Delivery','Delivered','Canceled') NOT NULL DEFAULT'Pending',
   `cost` int NOT NULL,
   `user_ID` int NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `fk_User_Orders` (`user_ID`),
   CONSTRAINT `fk_User_Orders` FOREIGN KEY (`user_ID`) REFERENCES `user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,6 +129,7 @@ CREATE TABLE `Orders` (
 
 LOCK TABLES `Orders` WRITE;
 /*!40000 ALTER TABLE `Orders` DISABLE KEYS */;
+INSERT INTO `Orders` VALUES (1,'2023-12-04','Pending',120,11),(2,'2023-12-05','Pending',111,12);
 /*!40000 ALTER TABLE `Orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,7 +158,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'Sata Fé - Peru','Coffee from peru',NULL,'beans',NULL,7.5),(2,'Castillo - Colombia','Coffee beans',NULL,'beans',NULL,7.9),(3,'Decaf Don Jebrile - México','Coffee beans',NULL,'beans',NULL,7.92),(4,'Decaf Chiapas - México','Coffee beans',NULL,'beans',NULL,7.95),(5,'Los Montres - Brazil','Coffee beans',NULL,'beans',NULL,8.47),(6,'Huila - Colombia','Coffee beans',NULL,'beans',NULL,8.69),(7,'Baho - Ruanda','Coffee beans',NULL,'beans',NULL,8.47),(8,'FEMALE PRODUCERS, HUEHUETENANGO - GUATEMALA','Coffee beans',NULL,'beans',NULL,8.95),(9,'NAZARETH´S FORMULA II - CARMO DE MINAS, BRAZIL','Coffee beans',NULL,'beans',NULL,9),(10,'CACAO BOMB - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(11,'KETIARA WOMEN\'S COOPERATIVE - SUMATRA','Coffee beans',NULL,'beans',NULL,8.95),(12,'VALLE DEL MANTARO - PERU','Coffee beans',NULL,'beans',NULL,9.9),(13,'YELLOW CATURRA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.9),(14,'ZANCADA - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(15,'SAN JOSÉ, INZA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.95);
+INSERT INTO `product` VALUES (1,'Sata Fé - Peru','Coffee from peru',NULL,'beans',NULL,7.5),(2,'','Coffee beans',NULL,'beans',NULL,7.9),(3,'Decaf Don Jebrile - México','Coffee beans',NULL,'beans',NULL,7.92),(4,'Decaf Chiapas - México','Coffee beans',NULL,'beans',NULL,7.95),(5,'Los Montres - Brazil','Coffee beans',NULL,'beans',NULL,8.47),(6,'Huila - Colombia','Coffee beans',NULL,'beans',NULL,8.69),(7,'Baho - Ruanda','Coffee beans',NULL,'beans',NULL,8.47),(8,'FEMALE PRODUCERS, HUEHUETENANGO - GUATEMALA','Coffee beans',NULL,'beans',NULL,8.95),(9,'NAZARETH´S FORMULA II - CARMO DE MINAS, BRAZIL','Coffee beans',NULL,'beans',NULL,9),(10,'CACAO BOMB - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(11,'KETIARA WOMEN\'S COOPERATIVE - SUMATRA','Coffee beans',NULL,'beans',NULL,8.95),(12,'VALLE DEL MANTARO - PERU','Coffee beans',NULL,'beans',NULL,9.9),(13,'YELLOW CATURRA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.9),(14,'ZANCADA - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(15,'SAN JOSÉ, INZA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.95);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -177,7 +179,7 @@ CREATE TABLE `user` (
   `activated` tinyint(1) NOT NULL DEFAULT '0',
   `verification_token` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,7 +188,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (11,'Johannes','Takamäki','d','josku123@gmail.com','user',1,'3f679dd90fab332229b9723b325127889e859687');
+INSERT INTO `user` VALUES (11,'Johannes','Takamäki','d','josku123@gmail.com','user',1,'3f679dd90fab332229b9723b325127889e859687'),(12,'Jan','Horak','test','admin@test.com','admin',1,'16a31a1eced23fc220ce6ecb2cd498c12d33705f'),(14,'Jan','Horak','test','user@test.com','user',0,'76efa6d8e502e2bbdbd47ecba64c9f175c7decab'),(15,'Jan','Horak','test','sealcoi@maildrop.cc','user',0,'250e3bbc9a7a04b3cf9b2669eea24a369bfddaac');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -199,4 +201,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-04 14:22:44
+-- Dump completed on 2023-12-05  0:43:37

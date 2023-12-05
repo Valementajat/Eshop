@@ -44,16 +44,16 @@ class App extends Component {
   }
 
   logout = () => {
-    localStorage.removeItem('user');
-    window.location.replace('/login');
+    localStorage.removeItem("user");
+    window.location.replace("/login");
   };
 
   submit = () => {
-    insertData(this.state)
-      .then(() => { alert('success post') });
+    insertData(this.state).then(() => {
+      alert("success post");
+    });
     console.log(this.state);
     document.location.reload();
-
   };
 
   remove = (id) => {
@@ -89,7 +89,7 @@ class App extends Component {
                 user.email && <span>Hello, {user.email}</span>
               )}
               <br />
-              
+
               <Button
                 className="my-2"
                 variant="contained"
@@ -98,13 +98,17 @@ class App extends Component {
                 Log Out
               </Button>
               <Link to="account">
-                <Button
-                  className="my-2"
-                  variant="contained"
-                >
+                <Button className="my-2" variant="contained">
                   Manage Account
                 </Button>
               </Link>
+              {user && user.role == "admin" && (
+                <Link to="admin/orders">
+                  <Button className="my-2" variant="contained">
+                    Manage Orders
+                  </Button>
+                </Link>
+              )}
             </div>
           )}
         </div>
@@ -122,17 +126,13 @@ class App extends Component {
               value={this.state.setReview}
               onChange={this.handleChange}
             />
-            <Button
-              className="my-2"
-              variant="contained"
-              onClick={this.submit}
-            >
+            <Button className="my-2" variant="contained" onClick={this.submit}>
               Submit
             </Button>
             <br />
           </div>
         )}
-       
+
         <br />
         <hr />
         <br />
