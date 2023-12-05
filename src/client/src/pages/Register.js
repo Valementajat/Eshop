@@ -67,7 +67,7 @@ class Register extends Component {
     try {
       const res = await registerUser({ name, surname, email, password });
       const token = res.data.token;
-      localStorage.setItem('user', JSON.stringify({token, name, surname, email, role:res.data.role}));
+      localStorage.setItem('user', JSON.stringify({id:res.data.id, token, name, surname, email, role:res.data.role}));
 
       // Reset error state on successful registration
       this.setState({ error: null });

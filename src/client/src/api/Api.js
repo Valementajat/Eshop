@@ -48,3 +48,20 @@ export const createUserOrder = (id, userId) => {
 export const getUserCarts = (userId) => {
   return axios.get('/api/user/getUserCarts', { params: { userId } });
 };
+
+
+export const getAllOrders = (token) => {
+  return axios.get('/api/admin/getAllOrders', {params: {token}});
+};
+
+export const getOrderInfo = (token, orderId) => {
+  return axios.get('/api/admin/getOrderInfo', {params: {token, orderId}});
+};
+
+export const updateOrderState = (id, data) => {
+  const headers = { Authorization: `Bearer ${data.token}` };
+
+  return axios.put(`/api/admin/updateOrderState/${id}`, data.orderState, {headers});
+};
+
+

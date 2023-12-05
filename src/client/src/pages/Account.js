@@ -21,6 +21,7 @@ class Account extends Component {
   async componentDidMount() {
     const user = JSON.parse(localStorage.getItem("user"));
     try {
+      console.log(user.id);
       getUserCarts({userId : user.id}).then((response) => {
        
         this.setState({

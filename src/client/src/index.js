@@ -8,6 +8,8 @@ import Register from './pages/Register';
 import Account from './pages/Account';
 import AccountUpdate from './pages/AccountUpdate';
 import VerifyEmail from './pages/VerifyEmail';
+import ManageOrders from './pages/ManageOrders';
+import OrderUpdate from './pages/OrderUpdate';
 
 const root = createRoot(document.getElementById('root'));
 
@@ -21,6 +23,10 @@ root.render(
       <Route exact path="/signup" element={<Register />} />
       <Route exact path="/account" element={<Account />} />
       <Route exact path="/account/update" element={<AccountUpdate />} />
+
+      <Route exact path="/admin/orders" element={<ManageOrders />} />
+      <Route exact path="/admin/orders/:id" element={<OrderUpdate />} />
+
 
     </Routes>
   </Router>
