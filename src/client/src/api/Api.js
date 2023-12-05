@@ -61,7 +61,7 @@ export const getOrderInfo = (token, orderId) => {
 export const updateOrderState = (id, data) => {
   const headers = { Authorization: `Bearer ${data.token}` };
 
-  return axios.put(`/api/admin/updateOrderState/${id}`, data.orderState, {headers});
+  return axios.put(`/api/admin/updateOrderState/${id}`, {state:data.orderState}, {headers});
 };
 
 

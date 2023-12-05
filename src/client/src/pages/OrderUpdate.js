@@ -51,15 +51,17 @@ class OrderUpdate extends Component {
     this.setState({ orderState: newState });
   };
 
-  isCancelationPossible() {
+  isCancelationPossible = () => {
     const orderInfo = this.state.orderInfo;
+    console.log(orderInfo.State);
     return orderInfo && (orderInfo.State === "Pending" || orderInfo.State === "Paid");
   }
   
-  changeOrderStateHandle(e) {
-    console.log(this.state);
+  changeOrderStateHandle = (e) => {
+
 
     let newState = this.state.orderState;
+    console.log(e);
     if (e.target.id === "cancel-order") {
       if (!this.isCancelationPossible()) {
         return;
@@ -67,11 +69,12 @@ class OrderUpdate extends Component {
         newState="Canceled";
       }
     }
-    console.log("Tady");
 
       const user = JSON.parse(localStorage.getItem("user"));
         
-        updateOrderState(this.state.orderInfo["Order ID"], {orderState:newState, token:user.token});
+        updateOrderState(this.state.orderInfo["Order ID"], {orderState:newState, token:user.token}).then(() => {
+          window.location.reload();
+        });
   }
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -125,9 +128,10 @@ class OrderUpdate extends Component {
                   <MenuItem value="Invoiced">Invoiced</MenuItem>
                   <MenuItem value="In Delivery">In Delivery</MenuItem>
                   <MenuItem value="Completed">Completed</MenuItem>
+                  <MenuItem disabled="true" value="Canceled">Canceled</MenuItem>
                 </Select>
                 <Button onClick={this.changeOrderStateHandle}>Submit</Button>
-                {this.isCancelationPossible && <Button id="cancel-order" onClick={this.changeStateHandle}>
+                {this.isCancelationPossible() && <Button id="cancel-order" onClick={this.changeOrderStateHandle}>
                   Cancel Order
                 </Button>}
               </FormControl>

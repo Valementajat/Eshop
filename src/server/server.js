@@ -260,7 +260,8 @@ app.get('/admin/getAllOrders', async (req, res) => {
 
 app.put('/admin/updateOrderState/:id', (req, res) => {
   const id = req.params.id;
-  const state = req.data.orderState;
+  const state = req.body.state;
+  console.log(req.body.state);
   const token = req.headers.authorization.split(' ')[1];
 
   if (!verifyAdmin(token)) {
@@ -269,7 +270,7 @@ app.put('/admin/updateOrderState/:id', (req, res) => {
     return
   }
 
-  const updateQuery = 'UPDATE Order SET state = ? WHERE id = ?';
+  const updateQuery = 'UPDATE `Orders` SET state = ? WHERE ID = ?';
   db.query(updateQuery, [state, id], (err, result) => {
     if (err) {
       res.status(500).send(err);

@@ -3,6 +3,7 @@ import { Button, TextField, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { getAllOrders } from '../api/Api';
 import OrdersTable from '../components/OrdersTable';
+import OrdersList from '../components/OrdersList';
 
 class ManageOrders extends Component {
   constructor(props) {
@@ -63,7 +64,7 @@ class ManageOrders extends Component {
         </Link>
         <h2>Manage Orders</h2>
 
-        <OrdersTable orders={this.state.orders}/>
+        <OrdersList orders={this.state.orders} isAdmin={true}/>
 
         
       </div>
