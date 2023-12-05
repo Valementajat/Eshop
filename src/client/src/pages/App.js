@@ -137,15 +137,17 @@ class App extends Component {
         <hr />
         <br />
         <Container>
-          <Grid container spacing={2}>
-            <CardComponent
-              data={this.state.fetchData}
-              handleChange2={this.handleChange2}
-              edit={this.edit}
-              remove={this.remove}
-              user={user}
-            />
-          </Grid>
+          <Box display="flex" justifyContent="center" alignItems="center" marginTop={2}>
+            <Grid container spacing={2}>
+              <CardComponent
+                data={this.state.fetchData}
+                handleChange2={this.handleChange2}
+                edit={this.edit}
+                remove={this.remove}
+                user={user}
+              />
+            </Grid>
+          </Box>
         </Container>
         {!user && (
           <div>

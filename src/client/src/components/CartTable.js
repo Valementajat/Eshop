@@ -18,8 +18,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-// import DeleteIcon from '@mui/icons-material/Delete';
-// import FilterListIcon from '@mui/icons-material/FilterList';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Button} from "@mui/material";
 import {  createUserOrder } from "../api/Api";
@@ -159,7 +159,7 @@ function EnhancedTableToolbar(props) {
             <Tooltip title="Delete">
             <IconButton>
               Delete
-               {/* <DeleteIcon /> */}
+                <DeleteIcon /> 
             </IconButton>
             </Tooltip>
             {numSelected === 1 && (
@@ -173,7 +173,7 @@ function EnhancedTableToolbar(props) {
         <Tooltip title="Filter list">
           <IconButton>
             Filter
-            {/* <FilterListIcon /> */}
+             <FilterListIcon /> 
           </IconButton>
         </Tooltip>
         

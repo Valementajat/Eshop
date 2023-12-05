@@ -14,3 +14,21 @@
 
   color: red;
 }
+
+.center-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* Allows cards to wrap if they exceed the container width */
+  margin-top: 20px; /* Adjust margin top as needed */
+}
+
+/* Add this CSS to style the cards as needed */
+/* For example, adjust the card width, margin, etc. */
+.center-cards .m-2 {
+  margin: 5px;
+}
+.center-cards .card {
+  width: 18rem;
+  margin: 10px;
+}
