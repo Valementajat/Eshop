@@ -4,6 +4,8 @@ import { Button, Container, TextField, Grid } from "@mui/material";
 import { fetchData, deleteData, updateData, insertData } from "../api/Api";
 import CardComponent from "../components/CardComponent";
 import { Link } from "react-router-dom";
+import TopAppBarUser from "../components/TopBarComponent";
+import TopAppBar from "../components/AddbarComponent";
 
 class App extends Component {
   constructor(props) {
@@ -78,11 +80,21 @@ class App extends Component {
 
     return (
       <div className="App">
-        <div>
+            <div>
+        {!user && (
+          <div>
+          <TopAppBar/>
+        
+        </div>
+        )}
+
           {user && (
             <div>
               {user.name !== "" || user.surname !== "" ? (
                 <span>
+                   <div>
+            <TopAppBarUser/></div>
+
                   Hello, {user.name} {user.surname}
                 </span>
               ) : (
@@ -137,8 +149,8 @@ class App extends Component {
         <hr />
         <br />
         <Container>
-          <Box display="flex" justifyContent="center" alignItems="center" marginTop={2}>
-            <Grid container spacing={2}>
+{/*           <Box display="flex" justifyContent="center" alignItems="center" marginTop={2}>
+ */}            <Grid container spacing={2}>
               <CardComponent
                 data={this.state.fetchData}
                 handleChange2={this.handleChange2}
@@ -147,22 +159,9 @@ class App extends Component {
                 user={user}
               />
             </Grid>
-          </Box>
-        </Container>
-        {!user && (
-          <div>
-            <Link to="/login">
-              <Button className="my-2" variant="contained">
-                Login
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button className="my-2" variant="contained">
-                Sign Up
-              </Button>
-            </Link>
-          </div>
-        )}
+{/*           </Box>
+ */}        </Container>
+        
       </div>
     );
   }

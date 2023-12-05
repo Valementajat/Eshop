@@ -3,6 +3,8 @@ import { Button, TextField, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { loginUser } from '../api/Api';
 
+import TopAppBar from '../components/AddbarComponent';
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -69,7 +71,7 @@ class Login extends Component {
   render() {
     return (
       <div className="login-container">
-        <h2>Login</h2>
+        <TopAppBar/>
         <div>
           <TextField
             type="email"
