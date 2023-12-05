@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 
 const OrdersList = ({ orders, isAdmin=false }) => {
-  console.log(orders);
   const [orderBy, setOrderBy] = useState('');
   const [order, setOrder] = useState('asc');
   const [filter, setFilter] = useState('');
@@ -106,7 +105,7 @@ const OrdersList = ({ orders, isAdmin=false }) => {
               return (
               <TableRow key={order.ID}>
                 <TableCell>{order.ID}</TableCell>
-                <TableCell>{order.orderDate}</TableCell>
+                <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                 <TableCell>{order.state}</TableCell>
                 <TableCell>{order.cost}</TableCell>
                 {isAdmin && <TableCell>{order.user_ID}</TableCell>}

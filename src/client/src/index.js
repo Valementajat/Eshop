@@ -11,6 +11,8 @@ import VerifyEmail from './pages/VerifyEmail';
 import ManageOrders from './pages/ManageOrders';
 import OrderUpdate from './pages/OrderUpdate';
 import Ufooter from "./components/Footer";
+import CartDetail from './pages/CartDetail';
+import Cart from './pages/Cart';
 
 const root = createRoot(document.getElementById('root'));
 
@@ -26,6 +28,9 @@ root.render(
         <Route exact path="/signup" element={<Register />} />
         <Route exact path="/account" element={<Account />} />
         <Route exact path="/account/update" element={<AccountUpdate />} />
+
+        <Route exact path="/cart" element={<Cart />} />
+        <Route exact path="/cart/:id" element={<CartDetail />} />
 
         <Route exact path="/admin/orders" element={<ManageOrders />} />
         <Route exact path="/admin/orders/:id" element={<OrderUpdate />} />

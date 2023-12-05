@@ -36,7 +36,6 @@ class ManageOrders extends Component {
             orders: response.data.orders,
            
           });
-         console.log(response.data.orders);
         });
       } catch (error) {
         console.error('Error fetching user orders:', error);

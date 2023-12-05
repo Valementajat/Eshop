@@ -49,6 +49,9 @@ export const getUserCarts = (userId) => {
   return axios.get('/api/user/getUserCarts', { params: { userId } });
 };
 
+export const getCartDetails = (userId, cartId) => {
+  return axios.get('/api/user/getCartDetails', { params: { userId, cartId } });
+};
 
 export const getAllOrders = (token) => {
   return axios.get('/api/admin/getAllOrders', {params: {token}});
