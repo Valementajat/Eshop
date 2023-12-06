@@ -51,6 +51,36 @@ const verifyToken = (req, res, next) => {
 
 // AUTHENTICATION
 // Register endpoint
+app.post("/user/register", async (req, res) => {
+  const { name, surname, email, password } = req.body;
+
+  // Check if the email is already taken
+  const [existingUser] = await db
+    .promise()
+    .query("SELECT * FROM user WHERE email = ?", [email]);
+  if (existingUser.length > 0) {
+    return res
+      .status(400)
+      .json({ message: "User with this email already exists" });
+  }
+
+  // Create a new user
+  const userVerificationToken = emailSender.newUser();
+  await db
+    .promise()
+    .query(
+      "INSERT INTO user (name, surname, email, password, verification_token) VALUES (?, ?, ?, ?, ?)",
+      [name, surname, email, password, userVerificationToken]
+    );
+
+  // Assuming successful registration, generate a JWT token
+  const [newUser] = await db
+    .promise()
+    .query("SELECT * FROM user WHERE email = ?", [email]);
+  const token = jwt.sign(
+    { id: newUser[0].id, email: newUser[0].email },
+    jwt_token
+  );
 
   // Store the token in the session for demonstration purposes (in a real app, you might store it differently)
   req.session.token = token;
@@ -107,31 +137,14 @@ app.post("/user/login", async (req, res) => {
 });
 
 // Update user endpoint
-<<<<<<< src/server/server.js
-app.post("/user/verifyEmail", async (req, res) => {
-=======
-app.post('/user/verifyEmail', async (req, res) => {
-<<<<<<< Updated upstream
->>>>>>> src/server/server.js
-  const { email, token } = req.body;
+app.put('/user/update', async (req, res) => {
 
-  try {
-    // Check if the email and verification token match in the database
-    const [users] = await db
-      .promise()
-      .query("SELECT * FROM user WHERE email = ? AND verification_token = ?", [
-        email,
-        token,
-      ]);
-
-=======
   const { params } = req.body;
 
   try {
     // Check if the email and verification token match in the database
     const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
     console.log(users);
->>>>>>> Stashed changes
     if (users.length > 0) {
       const user = users[0];
 
@@ -141,29 +154,12 @@ app.post('/user/verifyEmail', async (req, res) => {
       }
 
       // Update the 'activated' field to true
-<<<<<<< src/server/server.js
-      await db
-        .promise()
-        .query("UPDATE user SET activated = ? WHERE email = ?", [true, email]);
-=======
-<<<<<<< Updated upstream
-      await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, email]);
->>>>>>> src/server/server.js
-
-      res.json({ message: "Verification successful" });
-    } else {
-<<<<<<< src/server/server.js
-      res.status(400).json({ message: "Invalid verification details" });
-=======
       res.status(400).json({ message: 'Invalid verification details' });
-=======
       await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
 
       res.json({ message: 'Verification successful' });
     } else {
       res.status(402).json({ message: 'Invalid verification details' });
->>>>>>> Stashed changes
->>>>>>> src/server/server.js
     }
   } catch (error) {
     console.error("Error occurred during verification:", error);
@@ -171,15 +167,9 @@ app.post('/user/verifyEmail', async (req, res) => {
   }
 });
 
-<<<<<<< src/server/server.js
-app.put("/user/update", async (req, res) => {
-=======
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
+
 app.put('/user/update', async (req, res) => {
->>>>>>> src/server/server.js
   const { token, name, surname, email, password } = req.body;
 
   try {
@@ -230,17 +220,25 @@ app.delete("/user/delete", async (req, res) => {
     res.status(401).json({ message: "Unauthorized" });
   }
 });
-<<<<<<< Updated upstream
 
 // Modify the backend route to retrieve userId from query params
 app.get('/user/getUserCarts', async (req, res) => {
   let { userId } = req.query; // Get the userId from query parameter
-  
+
   try {
     // Fetch user carts information using JOIN operation among Cart, CartItem, and product tables
-    const [carts] = await db.promise().query('SELECT * FROM Cart WHERE user_id = ?', [userId.userId]);
+    const [carts] = await db
+      .promise()
+      .query("SELECT * FROM Cart WHERE user_id = ?", [userId.userId]);
 
-=======
+    res.json({ carts }); // Respond with the fetched carts
+  } catch (error) {
+    console.error("Exception occurred while fetching user carts:", error);
+    res
+      .status(501)
+      .json({ error: "Exception occurred while fetching user carts" });
+  }
+});
 app.post('/user/addToCart', async (req, res) => {
   const { params } = req.body;
   const item = params.item;
@@ -343,29 +341,6 @@ app.post('/user/updatedCartItemsQuantity', async (req, res) => {
       }
     });
 
-// Modify the backend route to retrieve userId from query params
-app.get("/user/getUserCarts", async (req, res) => {
-  let { userId } = req.query; // Get the userId from query parameter
-
-  try {
-    // Fetch user carts information using JOIN operation among Cart, CartItem, and product tables
-    const [carts] = await db
-      .promise()
-      .query("SELECT * FROM Cart WHERE user_id = ?", [userId.userId]);
-
-<<<<<<< src/server/server.js
-    res.json({ carts }); // Respond with the fetched carts
-  } catch (error) {
-    console.error("Exception occurred while fetching user carts:", error);
-    res
-      .status(501)
-      .json({ error: "Exception occurred while fetching user carts" });
-  }
-});
-=======
->>>>>>> Stashed changes
-    res.json({  carts }); // Respond with the fetched carts
->>>>>>> src/server/server.js
 
 // Modify the backend route to retrieve userId from query params
 app.get("/user/getUserOrders", async (req, res) => {
@@ -544,7 +519,6 @@ app.get("/user/createUserOrder", async (req, res) => {
 
   try {
     // Fetch cart details using the provided cartId
-<<<<<<< src/server/server.js
     const [cart] = await db
       .promise()
       .query("SELECT * FROM Cart WHERE ID = ?", [id.id]);
@@ -556,26 +530,6 @@ app.get("/user/createUserOrder", async (req, res) => {
         "INSERT INTO Orders (orderDate, state, cost, user_ID) VALUES (NOW(), ?, ?, ?)",
         [0, cart[0].cost, id.UserId]
       );
-=======
-    const [cart] = await db.promise().query('SELECT * FROM Cart WHERE ID = ?', [id.id]);
-<<<<<<< Updated upstream
-console.log(id.UserId);
-=======
-
->>>>>>> Stashed changes
-    // Create a new order based on the fetched cart details
-    const [result] = await db
-      .promise()
-      .query('INSERT INTO Orders (orderDate, state, cost, user_ID) VALUES (NOW(), ?, ?, ?)', [
-<<<<<<< Updated upstream
-        0,
-=======
-        "Pending",
->>>>>>> Stashed changes
-        cart[0].cost,
-        id.UserId,
-      ]);
->>>>>>> src/server/server.js
 
     const orderId = result.insertId; // Newly created order ID
 
