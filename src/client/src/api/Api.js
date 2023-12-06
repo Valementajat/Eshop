@@ -37,8 +37,8 @@ export const updateData = (id, data) => {
   return axios.put(`/api/update/${id}`, data);
 };
 
-export const VerifyEmail = (data) => {
-  return axios.post('/api/user/verifyEmail', {data})
+export const VerifyEmail = (email, token) => {
+  return axios.post('/api/user/verifyEmail', {params: {email, token}})
 };
 
 export const createUserOrder = (id, userId) => {
@@ -62,6 +62,20 @@ export const updateOrderState = (id, data) => {
   const headers = { Authorization: `Bearer ${data.token}` };
 
   return axios.put(`/api/admin/updateOrderState/${id}`, data.orderState, {headers});
+<<<<<<< Updated upstream
+=======
+};
+export const addToCart = (userId, item, cartId) => {
+  return axios.post('/api/user/addToCart', {params: {userId, item, cartId}})
+};
+export const updatedCartItemsQuantity = ( itemToUpdate, cartId, newQuantity ) => {
+  return axios.post('/api/user/updatedCartItemsQuantity', {params: {  itemToUpdate, cartId, newQuantity }})
+};
+export const removeCart = (cartId) => {
+  return axios.post('/api/user/removeCart', {params: {cartId}})
+>>>>>>> Stashed changes
 };
 
-
+export const switchCart = (cartId) => {
+  return axios.post('/api/user/switchCart', {params: {cartId}})
+};

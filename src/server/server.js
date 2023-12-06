@@ -97,12 +97,21 @@ app.post('/user/login', async (req, res) => {
 
 // Update user endpoint
 app.post('/user/verifyEmail', async (req, res) => {
+<<<<<<< Updated upstream
   const { email, token } = req.body;
 
   try {
     // Check if the email and verification token match in the database
     const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [email, token]);
 
+=======
+  const { params } = req.body;
+
+  try {
+    // Check if the email and verification token match in the database
+    const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
+    console.log(users);
+>>>>>>> Stashed changes
     if (users.length > 0) {
       const user = users[0];
 
@@ -112,11 +121,19 @@ app.post('/user/verifyEmail', async (req, res) => {
       }
 
       // Update the 'activated' field to true
+<<<<<<< Updated upstream
       await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, email]);
 
       res.json({ message: 'Verification successful' });
     } else {
       res.status(400).json({ message: 'Invalid verification details' });
+=======
+      await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
+
+      res.json({ message: 'Verification successful' });
+    } else {
+      res.status(402).json({ message: 'Invalid verification details' });
+>>>>>>> Stashed changes
     }
   } catch (error) {
     console.error('Error occurred during verification:', error);
@@ -124,6 +141,10 @@ app.post('/user/verifyEmail', async (req, res) => {
   }
 });
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 app.put('/user/update', async (req, res) => {
   const { token, name, surname, email, password } = req.body;
 
@@ -164,6 +185,7 @@ app.delete('/user/delete', async (req, res) => {
     res.status(401).json({ message: 'Unauthorized' });
   }
 });
+<<<<<<< Updated upstream
 
 // Modify the backend route to retrieve userId from query params
 app.get('/user/getUserCarts', async (req, res) => {
@@ -173,6 +195,118 @@ app.get('/user/getUserCarts', async (req, res) => {
     // Fetch user carts information using JOIN operation among Cart, CartItem, and product tables
     const [carts] = await db.promise().query('SELECT * FROM Cart WHERE user_id = ?', [userId.userId]);
 
+=======
+app.post('/user/addToCart', async (req, res) => {
+  const { params } = req.body;
+  const item = params.item;
+  const userId = params.userId;
+  const cartId = params.cartId;
+ 
+  try {
+    // Check if the user exists and is activated
+    const [users] = await db.promise().query('SELECT * FROM user WHERE id = ?', [userId]);
+    if (users.length === 0 || !users[0].activated) {
+      return res.status(401).json({ message: 'Invalid user or account not activated' });
+    }
+    
+    // Add the item to the cart
+    if ( cartId === 0) {
+      // If cartId is null, create a new cart for the user
+      const [newCart] = await db.promise().query('INSERT INTO Cart (name, user_id, cost) VALUES (?, ?, ?)', ["NewCart" , userId, 0]);
+      const newCartId = newCart.insertId;
+      await db.promise().query('INSERT INTO CartItem (cart_ID, product_ID, counts, costs) VALUES (?, ?, ?, ?)', [newCartId, item.id, item.quantity, item.price]);
+      const [cartItems] = await db.promise().query(`
+        SELECT product.*, CartItem.counts AS quantity
+        FROM product
+        INNER JOIN CartItem ON product.id = CartItem.product_ID
+        WHERE CartItem.cart_ID = ?
+      `, [newCartId]);
+
+
+      return res.json({ message: 'Item added to a new cart successfully', cartId: newCartId, cartItems });
+    } else {
+
+      const [existingItem] = await db.promise().query('SELECT * FROM CartItem WHERE cart_ID = ? AND product_ID = ?', [cartId, item.id]);
+
+      if (existingItem.length > 0) {
+        await db.promise().query('UPDATE CartItem SET counts = ? WHERE ID = ?', [existingItem[0].counts + 1, existingItem[0].ID]);
+
+      } else {
+      // Add the item to the existing cart
+      await db.promise().query('INSERT INTO CartItem (cart_ID, product_ID, counts, costs) VALUES (?, ?, ?, ?)', [cartId, item.id, item.quantity, item.price]);
+      }
+      const [cartItems] = await db.promise().query(`
+        SELECT product.*, CartItem.counts AS quantity
+        FROM product
+        INNER JOIN CartItem ON product.id = CartItem.product_ID
+        WHERE CartItem.cart_ID = ?
+      `, [cartId]);
+
+      return res.json({ message: 'Item added to the existing cart successfully', cartId, cartItems });
+    }
+  } catch (error) {
+    console.error('Error occurred while adding item to cart:', error);
+    return res.status(500).json({ message: 'Error adding item to cart' });
+  }
+});
+app.post('/user/removeCart', async (req, res) => {
+  const { params } = req.body;
+  const cartId = params.cartId;
+  await db.promise().query('DELETE FROM Cart WHERE id = ?', [cartId]);
+  return res.json({ message: 'Cart deleted succesfully' });
+
+
+});
+
+app.post('/user/updatedCartItemsQuantity', async (req, res) => {
+  const { params } = req.body;
+  const cartId = params.cartId;
+  const itemToUpdate = params.itemToUpdate;
+  const newQuantity = params.newQuantity;
+    try {
+      // Check if the new quantity is greater than zero
+      if (newQuantity > 0) {
+        // If the new quantity is greater than zero, update the quantity
+        await db.promise().query('UPDATE CartItem SET counts = ? WHERE cart_ID = ? AND product_ID = ?', [newQuantity, cartId, itemToUpdate.id]);
+      } else {
+        // If the new quantity is zero or negative, remove the item from the cart
+        await db.promise().query('DELETE FROM CartItem WHERE cart_ID = ? AND product_ID = ?', [cartId, itemToUpdate.id]);
+      }
+  
+      return res.json({ message: 'Item added to the existing cart successfully' });
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      return { success: false, message: 'Error updating quantity' };
+    }
+  });
+  app.post('/user/switchCart', async (req, res) => {
+    const { params } = req.body;
+    const cartId = params.cartId;
+    console.log(params);
+      try {
+        const [cartItems] = await db.promise().query(`
+        SELECT product.*, CartItem.counts AS quantity
+        FROM product
+        INNER JOIN CartItem ON product.id = CartItem.product_ID
+        WHERE CartItem.cart_ID = ?
+      `, [cartId]);
+
+      return res.json({ message: 'Cart terrieved Succesfully', cartItems });
+      } catch (error) {
+        console.error('Error retrieving cart:', error);
+        return { success: false, message: 'Error updating quantity' };
+      }
+    });
+
+// Modify the backend route to retrieve userId from query params
+app.get('/user/getUserCarts', async (req, res) => {
+  let { userId } = req.query; // Get the userId from query parameter
+  
+  try {
+    // Fetch user carts information using JOIN operation among Cart, CartItem, and product tables
+    const [carts] = await db.promise().query('SELECT * FROM Cart WHERE user_id = ?', [userId.userId]);
+
+>>>>>>> Stashed changes
     res.json({  carts }); // Respond with the fetched carts
 
   } catch (error) {
@@ -287,12 +421,20 @@ app.get('/user/createUserOrder', async (req, res) => {
   try {
     // Fetch cart details using the provided cartId
     const [cart] = await db.promise().query('SELECT * FROM Cart WHERE ID = ?', [id.id]);
+<<<<<<< Updated upstream
 console.log(id.UserId);
+=======
+
+>>>>>>> Stashed changes
     // Create a new order based on the fetched cart details
     const [result] = await db
       .promise()
       .query('INSERT INTO Orders (orderDate, state, cost, user_ID) VALUES (NOW(), ?, ?, ?)', [
+<<<<<<< Updated upstream
         0,
+=======
+        "Pending",
+>>>>>>> Stashed changes
         cart[0].cost,
         id.UserId,
       ]);

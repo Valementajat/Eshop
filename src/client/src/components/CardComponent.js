@@ -1,26 +1,32 @@
 // CardComponent.js
 import React from 'react';
-import { Card, CardContent, Typography, Grid } from '@mui/material';
+import { Card, CardContent, Typography, Grid, Button } from '@mui/material';
 
-const CardComponent = ({ data }) => {
+const CardComponent = ({ data, addToCart }) => {
+  const handleAddToCart = (item) => {
+  addToCart(item);/// Call the function to add item to the cart
+  };
   return (
     <Grid container spacing={2}>
-      {data.map((product, index) => (
+      {data.map((item, index) => (
         <Grid item xs={12} sm={6} md={4} key={index}>
           <Card>
             <CardContent>
               <Typography variant="h6" component="h2">
-                {product.name}
+                {item.name}
+              </Typography> 
+              <Typography variant="body2" color="textSecondary">
+                Description: {item.description}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Description: {product.description}
+                Tags: {item.tags}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Tags: {product.tags}
+                Price: ${item.price}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Price: ${product.price}
-              </Typography>
+              <Button variant="contained" onClick={() => handleAddToCart(item)}>
+                Add to Cart
+              </Button>
             </CardContent>
           </Card>
         </Grid>
