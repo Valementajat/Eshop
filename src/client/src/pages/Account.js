@@ -1,15 +1,16 @@
 import React, { Component } from "react";
 import { Button, Grid, Container } from "@mui/material";
 import { Link } from "react-router-dom";
-import { getUserCarts, createUserOrder } from "../api/Api";
+import { getUserCarts, createUserOrder, getUserOrders } from "../api/Api";
 import CartDataTable from "../components/CartTable";
+import OrdersList from "../components/OrdersList";
 
 class Account extends Component {
   constructor(props) {
     super(props);
     this.state = {
       message: null,
-      carts: [], // Initialize carts state
+      orders: [], // Initialize orders state
     };
     const localUser = JSON.parse(localStorage.getItem("user"));
 
@@ -22,16 +23,14 @@ class Account extends Component {
     const user = JSON.parse(localStorage.getItem("user"));
     try {
       console.log(user.id);
-      getUserCarts({userId : user.id}).then((response) => {
-       
+      getUserOrders({ userId: user.id }).then((response) => {
         this.setState({
-          carts: response.data.carts,
-         
+          orders: response.data.orders,
         });
-       console.log(response.data.carts);
+        console.log(response.data);
       });
     } catch (error) {
-      console.error('Error fetching user carts:', error);
+      console.error("Error fetching user orders:", error);
     }
   }
 
@@ -40,11 +39,9 @@ class Account extends Component {
     window.location.replace("/login");
   };
 
- 
-
   render() {
     const user = JSON.parse(localStorage.getItem("user"));
-    const { carts } = this.state; // Destructure carts from state
+    const { orders } = this.state; // Destructure orders from state
 
     return (
       <div className="login-container">
@@ -52,41 +49,40 @@ class Account extends Component {
         {user && (
           <div>
             <div>
-              <span><strong>Full Name: </strong></span>
+              <span>
+                <strong>Full Name: </strong>
+              </span>
               <span>{user.name + " " + user.surname}</span>
             </div>
             <div>
-              <span><strong>Email: </strong></span>
+              <span>
+                <strong>Email: </strong>
+              </span>
               <span>{user.email}</span>
             </div>
             <hr />
           </div>
         )}
         <Link to="/">
-          <Button variant="contained">
-            Home
-          </Button>
+          <Button variant="contained">Home</Button>
         </Link>
         <Button className="my-2" variant="contained" onClick={this.logout}>
           Log Out
         </Button>
 
         <Link to="/account/update">
-          <Button variant="contained">
-            Update Account
-          </Button>
+          <Button variant="contained">Update Account</Button>
         </Link>
         <br />
         <br />
 
         <br />
-        {/* {!carts && ( */}
+        {/* {!orders && ( */}
         <Container>
-         
-            {/* Pass data and createOrder function to CartComponent */}
-            <CartDataTable carts={carts}/>
+          {/* Pass data and createOrder function to CartComponent */}
+          {orders && <OrdersList orders={orders} />}{" "}
         </Container>
-         {/* )} */}
+        {/* )} */}
       </div>
     );
   }

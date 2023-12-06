@@ -258,6 +258,11 @@ try{
                   Manage Account
                 </Button>
               </Link>
+              <Link to="cart">
+                <Button className="my-2" variant="contained">
+                  My Carts
+                </Button>
+              </Link>
               {user && user.role == "admin" && (
                 <Link to="admin/orders">
                   <Button className="my-2" variant="contained">
