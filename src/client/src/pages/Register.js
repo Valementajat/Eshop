@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button, TextField, Alert } from "@mui/material";
 import { Link, useHistory } from "react-router-dom";
 import { registerUser } from "../api/Api";
+import TopAppBar from '../components/AddbarComponent';
 
 
 class Register extends Component {
@@ -91,6 +92,7 @@ class Register extends Component {
   render() {
     return (
       <div className="login-container">
+        <TopAppBar/>
         <h2>Sign Up</h2>
         
         <div>

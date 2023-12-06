@@ -5,7 +5,7 @@ const PropertyTable = ({ data }) => {
   const properties = Object.entries(data);
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
