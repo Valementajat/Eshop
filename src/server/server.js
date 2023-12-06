@@ -242,6 +242,27 @@ app.get("/user/getUserCarts", async (req, res) => {
       .json({ error: "Exception occurred while fetching user carts" });
   }
 });
+
+// Modify the backend route to retrieve userId from query params
+app.get("/user/getUserOrders", async (req, res) => {
+  let { userId } = req.query; // Get the userId from query parameter
+
+  try {
+    // Fetch user carts information using JOIN operation among Cart, CartItem, and product tables
+    const [orders] = await db
+      .promise()
+      .query("SELECT * FROM Orders WHERE user_ID = ?", [userId.userId]);
+
+    res.json({ orders }); // Respond with the fetched orders
+  } catch (error) {
+    console.error("Exception occurred while fetching user orders:", error);
+    res
+      .status(501)
+      .json({ error: "Exception occurred while fetching user orders" });
+  }
+});
+
+
 async function verifyAdmin(token) {
   const decodedToken = jwt.verify(token, jwt_token);
   const [users] = await db

@@ -9,6 +9,7 @@ import {
   TableRow,
   TableSortLabel,
   TextField,
+  Button,
 } from '@mui/material';
 
 const OrdersList = ({ orders, isAdmin=false }) => {
@@ -37,6 +38,9 @@ const OrdersList = ({ orders, isAdmin=false }) => {
     return (a[orderBy] < b[orderBy] ? -1 : 1) * orderValue;
   });
 
+  const handleOrderClick = (id) => {
+    window.location.replace((isAdmin?"/admin/":"/") + "orders/" + id )
+  }
 
   return (
     <div>
@@ -46,7 +50,7 @@ const OrdersList = ({ orders, isAdmin=false }) => {
         onChange={(e) => setFilter(e.target.value)}
         style={{ marginBottom: '10px' }}
       />
-      <TableContainer component={Paper}>
+      <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
@@ -97,11 +101,11 @@ const OrdersList = ({ orders, isAdmin=false }) => {
                   </TableSortLabel>
                 </TableCell>
               )}
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {sortedOrders.map((order) => {
-              console.log(order);
               return (
               <TableRow key={order.ID}>
                 <TableCell>{order.ID}</TableCell>
@@ -109,6 +113,15 @@ const OrdersList = ({ orders, isAdmin=false }) => {
                 <TableCell>{order.state}</TableCell>
                 <TableCell>{order.cost}</TableCell>
                 {isAdmin && <TableCell>{order.user_ID}</TableCell>}
+                <TableCell>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleOrderClick(order.ID)}
+                >
+                  View Details
+                </Button>
+              </TableCell>
               </TableRow>
             )})}
           </TableBody>

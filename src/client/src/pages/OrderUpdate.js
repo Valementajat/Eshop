@@ -54,28 +54,31 @@ class OrderUpdate extends Component {
   isCancelationPossible = () => {
     const orderInfo = this.state.orderInfo;
     console.log(orderInfo.State);
-    return orderInfo && (orderInfo.State === "Pending" || orderInfo.State === "Paid");
-  }
-  
+    return (
+      orderInfo && (orderInfo.State === "Pending" || orderInfo.State === "Paid")
+    );
+  };
+
   changeOrderStateHandle = (e) => {
-
-
     let newState = this.state.orderState;
     console.log(e);
     if (e.target.id === "cancel-order") {
       if (!this.isCancelationPossible()) {
         return;
       } else {
-        newState="Canceled";
+        newState = "Canceled";
       }
     }
 
-      const user = JSON.parse(localStorage.getItem("user"));
-        
-        updateOrderState(this.state.orderInfo["Order ID"], {orderState:newState, token:user.token}).then(() => {
-          window.location.reload();
-        });
-  }
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    updateOrderState(this.state.orderInfo["Order ID"], {
+      orderState: newState,
+      token: user.token,
+    }).then(() => {
+      window.location.reload();
+    });
+  };
   componentDidMount() {
     const user = JSON.parse(localStorage.getItem("user"));
     const locationArr = window.location.href.split("/");
@@ -93,7 +96,7 @@ class OrderUpdate extends Component {
           "User ID": user_ID,
         },
         productsList: items,
-        orderState:state
+        orderState: state,
       });
       console.log(response.data);
     });
@@ -111,43 +114,69 @@ class OrderUpdate extends Component {
       <div>
         {this.state.orderInfo ? (
           <>
-            <Container>
+            <Paper elevation={3} style={{ margin: "20px", padding: "20px" }}>
               <Button variant="contained" component={Link} to="/">
                 Back to App
               </Button>
               <div style={{ marginBottom: "3rem" }}></div>
               <h3>Change the status</h3>
-              <FormControl>
-                <InputLabel>Order State</InputLabel>
-                <Select
-                  value={this.state.orderState}
-                  onChange={this.handleChange}
+              <Paper
+                elevation={3}
+                style={{ margin: "20px 0px", padding: "20px" }}
+              >
+                <FormControl>
+                  <InputLabel>Order State</InputLabel>
+                  <Select
+                    value={this.state.orderState}
+                    onChange={this.handleChange}
+                  >
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="Paid">Paid</MenuItem>
+                    <MenuItem value="Invoiced">Invoiced</MenuItem>
+                    <MenuItem value="In Delivery">In Delivery</MenuItem>
+                    <MenuItem value="Completed">Completed</MenuItem>
+                    <MenuItem disabled="true" value="Canceled">
+                      Canceled
+                    </MenuItem>
+                  </Select>
+                  <Button onClick={this.changeOrderStateHandle}>Submit</Button>
+                  {this.isCancelationPossible() && (
+                    <Button
+                      id="cancel-order"
+                      onClick={this.changeOrderStateHandle}
+                    >
+                      Cancel Order
+                    </Button>
+                  )}
+                </FormControl>
+              </Paper>
+              <Paper
+                elevation={3}
+                style={{ margin: "20px 0px", padding: "20px" }}
+              >
+                <div style={{ marginBottom: "3rem" }}></div>
+                <h2>Order Details</h2>
+                <Paper
+                  elevation={3}
+                  style={{ margin: "20px 0px", padding: "20px" }}
                 >
-                  <MenuItem value="Pending">Pending</MenuItem>
-                  <MenuItem value="Paid">Paid</MenuItem>
-                  <MenuItem value="Invoiced">Invoiced</MenuItem>
-                  <MenuItem value="In Delivery">In Delivery</MenuItem>
-                  <MenuItem value="Completed">Completed</MenuItem>
-                  <MenuItem disabled="true" value="Canceled">Canceled</MenuItem>
-                </Select>
-                <Button onClick={this.changeOrderStateHandle}>Submit</Button>
-                {this.isCancelationPossible() && <Button id="cancel-order" onClick={this.changeOrderStateHandle}>
-                  Cancel Order
-                </Button>}
-              </FormControl>
-              <div style={{ marginBottom: "3rem" }}></div>
-              <h2>Update Order</h2>
-              <PropertyTable data={orderInfo} />
-
-              <h3>Products</h3>
-              {productsList &&
-                Object.entries(productsList).map(([key, value]) => (
-                  <div key={key} style={{ marginBottom: "3rem" }}>
-                    <PropertyTable data={value} />
-                    <Divider />
-                  </div>
-                ))}
-            </Container>
+                  <PropertyTable data={orderInfo} />
+                </Paper>
+                <h3>Products</h3>
+                <Paper
+                  elevation={3}
+                  style={{ margin: "20px 0px", padding: "20px" }}
+                >
+                  {productsList &&
+                    Object.entries(productsList).map(([key, value]) => (
+                      <div key={key} style={{ marginBottom: "3rem" }}>
+                        <PropertyTable data={value} />
+                        <Divider />
+                      </div>
+                    ))}
+                </Paper>
+              </Paper>
+            </Paper>
           </>
         ) : (
           <strong>Invalid Order Number</strong>
