@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `Cart`;
 CREATE TABLE `Cart` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `cost` int NOT NULL,
+  `cost` float NOT NULL,
   `user_id` int NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `fk_user_cart` (`user_id`),
@@ -53,7 +53,7 @@ DROP TABLE IF EXISTS `CartItem`;
 CREATE TABLE `CartItem` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `counts` smallint NOT NULL,
-  `costs` smallint NOT NULL,
+  `costs` float NOT NULL,
   `cart_ID` int NOT NULL,
   `product_ID` int NOT NULL,
   PRIMARY KEY (`ID`),
@@ -115,7 +115,7 @@ CREATE TABLE `Orders` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `orderDate` date NOT NULL,
   `state` enum('Pending', 'Paid', 'Invoiced', 'In Delivery','Delivered','Canceled') NOT NULL DEFAULT'Pending',
-  `cost` int NOT NULL,
+  `cost` float NOT NULL,
   `user_ID` int NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `fk_User_Orders` (`user_ID`),
@@ -158,7 +158,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'Sata Fé - Peru','Coffee from peru',NULL,'beans',NULL,7.5),(2,'','Coffee beans',NULL,'beans',NULL,7.9),(3,'Decaf Don Jebrile - México','Coffee beans',NULL,'beans',NULL,7.92),(4,'Decaf Chiapas - México','Coffee beans',NULL,'beans',NULL,7.95),(5,'Los Montres - Brazil','Coffee beans',NULL,'beans',NULL,8.47),(6,'Huila - Colombia','Coffee beans',NULL,'beans',NULL,8.69),(7,'Baho - Ruanda','Coffee beans',NULL,'beans',NULL,8.47),(8,'FEMALE PRODUCERS, HUEHUETENANGO - GUATEMALA','Coffee beans',NULL,'beans',NULL,8.95),(9,'NAZARETH´S FORMULA II - CARMO DE MINAS, BRAZIL','Coffee beans',NULL,'beans',NULL,9),(10,'CACAO BOMB - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(11,'KETIARA WOMEN\'S COOPERATIVE - SUMATRA','Coffee beans',NULL,'beans',NULL,8.95),(12,'VALLE DEL MANTARO - PERU','Coffee beans',NULL,'beans',NULL,9.9),(13,'YELLOW CATURRA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.9),(14,'ZANCADA - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(15,'SAN JOSÉ, INZA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.95);
+INSERT INTO `product` VALUES (1,'Sata Fé - Peru','Coffee from peru',NULL,'beans',NULL,7.5),(2,'Sata Fé - México','Coffee beans',NULL,'beans',NULL,7.9),(3,'Decaf Don Jebrile - México','Coffee beans',NULL,'beans',NULL,7.92),(4,'Decaf Chiapas - México','Coffee beans',NULL,'beans',NULL,7.95),(5,'Los Montres - Brazil','Coffee beans',NULL,'beans',NULL,8.47),(6,'Huila - Colombia','Coffee beans',NULL,'beans',NULL,8.69),(7,'Baho - Ruanda','Coffee beans',NULL,'beans',NULL,8.47),(8,'FEMALE PRODUCERS, HUEHUETENANGO - GUATEMALA','Coffee beans',NULL,'beans',NULL,8.95),(9,'NAZARETH´S FORMULA II - CARMO DE MINAS, BRAZIL','Coffee beans',NULL,'beans',NULL,9),(10,'CACAO BOMB - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(11,'KETIARA WOMEN\'S COOPERATIVE - SUMATRA','Coffee beans',NULL,'beans',NULL,8.95),(12,'VALLE DEL MANTARO - PERU','Coffee beans',NULL,'beans',NULL,9.9),(13,'YELLOW CATURRA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.9),(14,'ZANCADA - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(15,'SAN JOSÉ, INZA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.95);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 

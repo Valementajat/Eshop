@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../css/App.css";
 import { Button, Container, TextField, Grid } from "@mui/material";
-import { fetchData, deleteData, updateData, insertData, updatedCartItemsQuantity, removeCart, switchCart } from "../api/Api";
+import { fetchData, deleteData, updateData, insertData, updatedCartItemsQuantity, removeCart, switchCart,createCartFromLocal } from "../api/Api";
 import CardComponent from "../components/CardComponent";
 import { Link } from "react-router-dom";
 import TopAppBarUser from "../components/TopBarComponent";
@@ -31,9 +31,10 @@ class App extends Component {
   
     
     try {
-      const cartId = this.state.cartId;
-      const userId = user.id;
+      
       if (this.state.user) {
+        const cartId = this.state.cartId;
+      const userId = user.id;
       addToCartCall( userId,  newItem, cartId ).then((response) => {
         // Update state with the new cart items received from the API response
         this.setState({
@@ -43,11 +44,16 @@ class App extends Component {
           // Make sure the API response structure matches your state structure
           // cartId: response.data.cartId, // Update cartId if necessary
         });
+        localStorage.setItem('cartId', JSON.stringify({id:cartId}));
+
       }).catch((error) => {
         console.error('Error adding item to cart:', error);
       });
     } else {
       // If the user is not logged in, update local state with the new item
+      let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      cartItems.push(newItem);
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
       this.setState((prevState) => ({
         cartItems: [...prevState.cartItems, newItem],
       }));
@@ -64,14 +70,29 @@ class App extends Component {
 
   
   updateQuantity = (itemToUpdate, newQuantity) => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem('user'));
     try {
       const cartId = this.state.cartId;
-      if (this.state.user) {
-        updatedCartItemsQuantity(  itemToUpdate, cartId, newQuantity ).then((response) => {
-     
-        
-        const updatedCartItems = this.state.cartItems.map(item => {
+      if (user) {
+        // If the user is logged in, update the cart items in the database
+        updatedCartItemsQuantity(itemToUpdate, cartId, newQuantity)
+          .then((response) => {
+            const updatedCartItems = this.state.cartItems.map((item) => {
+              if (item.id === itemToUpdate.id) {
+                // Ensure the new quantity is a valid number
+                const quantity = parseInt(newQuantity);
+                return { ...item, quantity: isNaN(quantity) ? 0 : quantity };
+              }
+              return item;
+            });
+            this.setState({ cartItems: updatedCartItems });
+          })
+          .catch((error) => {
+            console.error('Error updating cart items in the database:', error);
+          });
+      } else {
+        // If the user is not logged in, update the local state with the new item quantity
+        const updatedCartItems = this.state.cartItems.map((item) => {
           if (item.id === itemToUpdate.id) {
             // Ensure the new quantity is a valid number
             const quantity = parseInt(newQuantity);
@@ -80,33 +101,19 @@ class App extends Component {
           return item;
         });
         this.setState({ cartItems: updatedCartItems });
-      }).catch((error) => {
-        console.error('Error adding item to cart:', error);
-      });
-    } else {
-      // If the user is not logged in, update local state with the new item
-      const updatedCartItems = this.state.cartItems.map(item => {
-        if (item.id === itemToUpdate.id) {
-          // Ensure the new quantity is a valid number
-          const quantity = parseInt(newQuantity);
-          return { ...item, quantity: isNaN(quantity) ? 0 : quantity };
-        }
-        return item;
-      });
-      this.setState({ cartItems: updatedCartItems });
-    }}
-    catch (error) {
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems)); // Update local storage
+      }
+    } catch (error) {
       console.error('Error updating carts:', error);
     }
-    
-  }; 
+  };
+  
 
 
   removeFromCart = (itemToRemoves) => {
     const cartId = this.state.cartId;
 try{
     updatedCartItemsQuantity( itemToRemoves, cartId, 0 ).then((response) => {
-      console.log("Vittuakos täs");
       console.log(itemToRemoves);
       const updatedCartItems = this.state.cartItems.filter(item => item.id !== itemToRemoves.id);
       this.setState({ cartItems: updatedCartItems });
@@ -143,13 +150,45 @@ try{
         fetchData: response.data,
       });
     });
+   
+    
     try {
       this.setState({ user: JSON.parse(localStorage.getItem("user")) });
+        const maybeCartId =  JSON.parse(localStorage.getItem("cartId")) 
+        const user = JSON.parse(localStorage.getItem("user"));
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        this.setState({ cartItems });
+        if (maybeCartId === undefined || maybeCartId === null) {
+
+          this.setState({ cartId: 0  });
+          const cartId = this.state.cartId;
+
+          if (user && cartItems.length > 0) {
+            createCartFromLocal(cartItems, user.id).then((response) => {
+              this.setState({
+                cartItems: response.data.cartItemss,
+                cartId: response.data.cartId,
+                // You might receive updated cart data in response, adjust this part accordingly
+                // Make sure the API response structure matches your state structure
+                // cartId: response.data.cartId, // Update cartId if necessary
+              });
+              localStorage.removeItem("cartItems");
+              localStorage.setItem('cartId', JSON.stringify({id:cartId}));
+      
+            })
+
+           }
+        } else  {
+          this.switchCarts(maybeCartId.id);
+        }
+
     } catch (err) {}
   }
 
   logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("cartId");
+    localStorage.removeItem("cartItems");
     window.location.replace("/login");
   };
 
@@ -170,6 +209,7 @@ try{
 
   clear = () => {
     this.setState({ cartItems: [], cartId: 0 });
+    localStorage.removeItem("cartItems");
 
   };
   deleteCart = () => {
@@ -208,7 +248,6 @@ try{
 
     const user = this.state.user;
 
-    const { cartItems } = this.state; 
     return (
       <div className="App">
             <div>
@@ -232,20 +271,7 @@ try{
                 user.email && <span>Hello, {user.email}</span>
               )}
               <br />
-              <Button className="my-2" variant="contained" onClick={this.clear}>
-              New Cart
-            </Button>
-            <Button className="my-2" variant="contained" onClick={this.deleteCart}>
-              Remove Cart
-            </Button>
-            <Button className="my-2" variant="contained" onClick={() => this.switchCarts(35)}>
-              Switch Cart
-            </Button>
-            <Cart
-              cartItems={this.state.cartItems}
-              removeFromCart={this.removeFromCart}
-              updateQuantity={this.updateQuantity} // Pass the updateQuantity function
-            />
+              
               <Button
                 className="my-2"
                 variant="contained"
@@ -272,27 +298,21 @@ try{
               )}
             </div>
           )}
-        </div>
-        {user && user.role === "admin" && (
-          <div className="form">
-            <TextField
-              name="setBookName"
-              label="Enter Name"
-              value={this.state.setBookName}
-              onChange={this.handleChange}
-            />
-            <TextField
-              name="setReview"
-              label="Enter Review!!"
-              value={this.state.setReview}
-              onChange={this.handleChange}
-            />
-            <Button className="my-2" variant="contained" onClick={this.submit}>
-              Submit
+          <Button className="my-2" variant="contained" onClick={this.clear}>
+              New Cart
             </Button>
-            <br />
-          </div>
-        )}
+            {user && (
+            <Button className="my-2" variant="contained" onClick={this.deleteCart}>
+              Remove Cart
+            </Button>
+              )}
+            <Cart
+              cartItems={this.state.cartItems}
+              removeFromCart={this.removeFromCart}
+              updateQuantity={this.updateQuantity} // Pass the updateQuantity function
+            />
+        </div>
+       
 
         <br />
         <hr />

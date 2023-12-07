@@ -300,28 +300,90 @@ app.post('/user/removeCart', async (req, res) => {
 
 
 });
+app.post('/user/createCartFromLocal', async (req, res) => {
+  try {
+    const { params } = req.body;
+    const userId = params.userId;
+    const items = params.items;
+
+    // Create a new cart first and get the cart ID
+    const [newCart] = await db.promise().query('INSERT INTO Cart (name, user_id, cost) VALUES (?, ?, ?)', ["NewCart", userId, 0]);
+    const cartId = newCart.insertId;
+
+    // Perform operations to add items to the cart in the database
+    // Assuming 'CartItems' table has columns: id (auto-increment), cart_id, product_id, quantity, costs
+
+    // Insert items into the 'CartItems' table using the obtained cartId
+    for (const item of items) {
+      const { id, quantity, price } = item;
+
+      // Perform an insert query to add each item into the 'CartItems' table
+      await db.promise().query(
+        'INSERT INTO CartItem (cart_id, product_id, counts, costs) VALUES (?, ?, ?, ?)',
+        [cartId, id, quantity, price * quantity] // Calculate costs based on quantity and price
+      );
+    }
+
+    // Calculate the total cost for the items in the cart
+    const [cartItems] = await db.promise().query('SELECT * FROM CartItem WHERE cart_ID = ?', [cartId]);
+    const totalCost = cartItems.reduce((total, item) => total + parseFloat(item.costs), 0);
+
+    // Update the total cost in the Cart table
+    await db.promise().query('UPDATE Cart SET cost = ? WHERE ID = ?', [totalCost.toFixed(2), cartId]);
+    const [cartItemss] = await db.promise().query(`
+    SELECT product.*, CartItem.counts AS quantity
+    FROM product
+    INNER JOIN CartItem ON product.id = CartItem.product_ID
+    WHERE CartItem.cart_ID = ?
+  `, [cartId]);
+    // Respond with a success message and the cartId if successful
+    return res.status(200).json({ success: true, message: 'Cart created and items added successfully', cartId, cartItemss });
+  } catch (error) {
+    console.error('Error creating cart from local storage:', error);
+    return res.status(500).json({ success: false, message: 'Error creating cart from local storage' });
+  }
+});
 
 app.post('/user/updatedCartItemsQuantity', async (req, res) => {
   const { params } = req.body;
   const cartId = params.cartId;
   const itemToUpdate = params.itemToUpdate;
   const newQuantity = params.newQuantity;
-    try {
-      // Check if the new quantity is greater than zero
-      if (newQuantity > 0) {
-        // If the new quantity is greater than zero, update the quantity
-        await db.promise().query('UPDATE CartItem SET counts = ? WHERE cart_ID = ? AND product_ID = ?', [newQuantity, cartId, itemToUpdate.id]);
-      } else {
-        // If the new quantity is zero or negative, remove the item from the cart
-        await db.promise().query('DELETE FROM CartItem WHERE cart_ID = ? AND product_ID = ?', [cartId, itemToUpdate.id]);
-      }
-  
-      return res.json({ message: 'Item added to the existing cart successfully' });
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-      return { success: false, message: 'Error updating quantity' };
+
+  try {
+    let newTotalCost = 0;
+
+    // Check if the new quantity is greater than zero
+    if (newQuantity > 0) {
+      // If the new quantity is greater than zero, calculate the new price
+      const itemPrice = parseFloat(itemToUpdate.price); // Convert price to a floating-point number
+      const newPrice = (itemPrice * newQuantity).toFixed(2);
+
+      // Update the quantity and cost with the new values
+      await db.promise().query('UPDATE CartItem SET counts = ?, costs = ? WHERE cart_ID = ? AND product_ID = ?', [newQuantity, newPrice, cartId, itemToUpdate.id]);
+
+      // Calculate the new total cost after updating the item quantity and cost
+      const [cartItems] = await db.promise().query('SELECT * FROM CartItem WHERE cart_ID = ?', [cartId]);
+      newTotalCost = cartItems.reduce((total, item) => total + parseFloat(item.costs), 0); // Calculate the sum of costs of all items
+    } else {
+      // If the new quantity is zero or negative, remove the item from the cart
+      await db.promise().query('DELETE FROM CartItem WHERE cart_ID = ? AND product_ID = ?', [cartId, itemToUpdate.id]);
+
+      // Calculate the new total cost after removing the item
+      const [cartItems] = await db.promise().query('SELECT * FROM CartItem WHERE cart_ID = ?', [cartId]);
+      newTotalCost = cartItems.reduce((total, item) => total + parseFloat(item.costs), 0); // Calculate the sum of costs of all items
     }
-  });
+
+    // Update the total cost in the Cart table
+    await db.promise().query('UPDATE Cart SET cost = ? WHERE ID = ?', [newTotalCost.toFixed(2), cartId]);
+
+    return res.json({ message: 'Item updated in the cart successfully', newTotalCost });
+  } catch (error) {
+    console.error('Error updating quantity:', error);
+    return res.status(500).json({ success: false, message: 'Error updating quantity' });
+  }
+});
+
   app.post('/user/switchCart', async (req, res) => {
     const { params } = req.body;
     const cartId = params.cartId;
@@ -334,7 +396,7 @@ app.post('/user/updatedCartItemsQuantity', async (req, res) => {
         WHERE CartItem.cart_ID = ?
       `, [cartId]);
 
-      return res.json({ message: 'Cart terrieved Succesfully', cartItems });
+      return res.json({ message: 'Cart terrieved Succesfully', cartItems, cartId });
       } catch (error) {
         console.error('Error retrieving cart:', error);
         return { success: false, message: 'Error updating quantity' };
@@ -514,21 +576,24 @@ app.put("/admin/updateOrderState/:id", (req, res) => {
   });
 });
 
-app.get("/user/createUserOrder", async (req, res) => {
-  const { id } = req.query;
+app.post("/user/createUserOrder", async (req, res) => {
+  const { params } = req.body;
+ 
+  const cartId = params.id;
+  const UserId = params.userId;
 
   try {
     // Fetch cart details using the provided cartId
     const [cart] = await db
       .promise()
-      .query("SELECT * FROM Cart WHERE ID = ?", [id.id]);
-    console.log(id.UserId);
+      .query("SELECT * FROM Cart WHERE ID = ?", [cartId]);
+    console.log(UserId);
     // Create a new order based on the fetched cart details
     const [result] = await db
       .promise()
       .query(
         "INSERT INTO Orders (orderDate, state, cost, user_ID) VALUES (NOW(), ?, ?, ?)",
-        [0, cart[0].cost, id.UserId]
+        ["Pending", cart[0].cost, UserId]
       );
 
     const orderId = result.insertId; // Newly created order ID
@@ -536,7 +601,7 @@ app.get("/user/createUserOrder", async (req, res) => {
     // Fetch cart items associated with the cartId
     const [cartItems] = await db
       .promise()
-      .query("SELECT * FROM CartItem WHERE cart_ID = ?", [id.id]);
+      .query("SELECT * FROM CartItem WHERE cart_ID = ?", [cartId]);
 
     // Insert each cart item into the OrderLine table
     for (const cartItem of cartItems) {

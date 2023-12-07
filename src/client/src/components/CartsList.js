@@ -17,6 +17,13 @@ const CartsList = ({ carts }) => {
   const handleCartClick = (cartId) => {
     // Redirect to CartDetailPage when a cart is clicked
     navigate(`/cart/${cartId}`);
+    
+  };
+  const handleSwitchCarts = (cartId) => {
+    // Redirect to CartDetailPage when a cart is clicked
+    localStorage.setItem('cartId', JSON.stringify({id:cartId}));
+    alert(`Cart with ID ${cartId} has been selected.`);
+    
   };
 
   return (
@@ -43,6 +50,15 @@ const CartsList = ({ carts }) => {
                   onClick={() => handleCartClick(cart.ID)}
                 >
                   View Details
+                </Button>
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleSwitchCarts(cart.ID)}
+                >
+                  Switch carts
                 </Button>
               </TableCell>
             </TableRow>

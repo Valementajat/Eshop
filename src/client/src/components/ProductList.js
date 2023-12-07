@@ -2,6 +2,7 @@ import React from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 const ProductList = ({ productList }) => {
+  console.log(productList);
   return (
     <TableContainer>
       <Table>
@@ -22,7 +23,7 @@ const ProductList = ({ productList }) => {
               <TableCell>{product.id}</TableCell>
               <TableCell>{product.name}</TableCell>
               <TableCell>{product.description}</TableCell>
-              <TableCell>{product.cost}</TableCell>
+              <TableCell>{product.costs}</TableCell>
               <TableCell>{product.counts}</TableCell>
               <TableCell>{product.price}</TableCell>
               {/* Add more cells for additional properties */}

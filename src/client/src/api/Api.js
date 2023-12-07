@@ -42,7 +42,7 @@ export const VerifyEmail = (email, token) => {
 };
 
 export const createUserOrder = (id, userId) => {
-  return axios.get('/api/user/createUserOrder', { params: { id, userId } } )
+  return axios.post('/api/user/createUserOrder', { params: { id, userId } } )
 };
 
 export const getUserCarts = (userId) => {
@@ -84,4 +84,8 @@ export const removeCart = (cartId) => {
 
 export const switchCart = (cartId) => {
   return axios.post('/api/user/switchCart', {params: {cartId}})
+};
+
+export const createCartFromLocal = (items,userId) => {
+  return axios.post('/api/user/createCartFromLocal', {params: {items,userId}})
 };

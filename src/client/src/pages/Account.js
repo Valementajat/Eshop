@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Button, Grid, Container } from "@mui/material";
 import { Link } from "react-router-dom";
 import { getUserCarts, createUserOrder, getUserOrders } from "../api/Api";
-import CartDataTable from "../components/CartTable";
 import OrdersList from "../components/OrdersList";
 
 class Account extends Component {

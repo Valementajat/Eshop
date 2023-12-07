@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
+import { Link } from "react-router-dom";
+
 import {
   Paper,
   Table,
@@ -10,7 +12,7 @@ import {
   TableRow,
   Button,
 } from '@mui/material';
-import { getCartDetails } from '../api/Api';
+import { getCartDetails, removeCart, createUserOrder } from '../api/Api';
 import ProductList from '../components/ProductList';
 
 const CartDetail = () => {
@@ -44,12 +46,18 @@ const CartDetail = () => {
   const handleTurnIntoOrder = () => {
     // Implement logic to turn the cart into an order
     console.log(`Turning cart ${id} into an order`);
+    createUserOrder( parseInt(id), user.id ).then((response) => {
+      handleDeleteCart();
+
+    });
+    
   };
 
   const handleDeleteCart = () => {
     // Implement logic to delete the cart
-    console.log(`Deleting cart ${id}`);
-    console.log(cartDetails, cartProducts);
+    removeCart( id ).then((response) => {
+    });
+    window.location.replace("/cart");
   };
 
   return (
@@ -80,9 +88,13 @@ const CartDetail = () => {
       <Button variant="contained" color="primary" onClick={handleTurnIntoOrder}>
         Turn into Order
       </Button>
-      <Button variant="contained" color="secondary" onClick={handleDeleteCart}>
-        Delete Cart
-      </Button>
+      <Link to="cart">
+
+        <Button variant="contained" color="secondary" onClick={handleDeleteCart}>
+          Delete Cart
+        </Button>
+      </Link>
+
     </div>
   );
 };
