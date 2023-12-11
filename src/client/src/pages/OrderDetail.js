@@ -24,7 +24,7 @@ const OrderDetail = () => {
     });
   }, []);
 
-  if (!order) return <div>Invalid Order ID</div>;
+  if (!order) return <div>Invalid Order id</div>;
 
   const handleCancelOrder = () => {
         
@@ -36,12 +36,12 @@ const OrderDetail = () => {
     <div>
       <Typography variant="h4">Order Details</Typography>
       <Paper elevation={3} style={{ margin: "20px", padding: "20px" }}>
-        <Typography variant="h6">Order ID: {order.ID}</Typography>
+        <Typography variant="h6">Order id: {order.id}</Typography>
         <Typography variant="body1">
           Order Date: {new Date(order.orderDate).toLocaleDateString()}
         </Typography>
         <Typography variant="body1">State: {order.state}</Typography>
-        <Typography variant="body1">User ID: {order.user_ID}</Typography>
+        <Typography variant="body1">User id: {order.user_id}</Typography>
         <Typography variant="body1">Total Cost: {order.cost}</Typography>
 
         {order && (order.state == "Pending" || order.state == "Paid") && (
@@ -54,7 +54,7 @@ const OrderDetail = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
+                <TableCell>id</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Description</TableCell>
                 <TableCell>Cost</TableCell>

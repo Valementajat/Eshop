@@ -72,7 +72,7 @@ class OrderUpdate extends Component {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
-    updateOrderState(this.state.orderInfo["Order ID"], {
+    updateOrderState(this.state.orderInfo["Order id"], {
       orderState: newState,
       token: user.token,
     }).then(() => {
@@ -85,15 +85,15 @@ class OrderUpdate extends Component {
     const orderId = locationArr[locationArr.length - 1];
     console.log(orderId);
     getOrderInfo(user.token, orderId).then((response) => {
-      const { ID, cost, items, orderDate, state, user_ID } =
+      const { id, cost, items, orderDate, state, user_id } =
         response.data.order;
       this.setState({
         orderInfo: {
-          "Order ID": ID,
+          "Order id": id,
           "Total Cost": cost,
           "Created Date": orderDate,
           State: state,
-          "User ID": user_ID,
+          "User id": user_id,
         },
         productsList: items,
         orderState: state,

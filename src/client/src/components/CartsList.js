@@ -22,7 +22,7 @@ const CartsList = ({ carts }) => {
   const handleSwitchCarts = (cartId) => {
     // Redirect to CartDetailPage when a cart is clicked
     localStorage.setItem('cartId', JSON.stringify({id:cartId}));
-    alert(`Cart with ID ${cartId} has been selected.`);
+    alert(`Cart with id ${cartId} has been selected.`);
     
   };
 
@@ -31,7 +31,7 @@ const CartsList = ({ carts }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>ID</TableCell>
+            <TableCell>id</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Cost</TableCell>
             <TableCell>Action</TableCell>
@@ -39,15 +39,15 @@ const CartsList = ({ carts }) => {
         </TableHead>
         <TableBody>
           {carts.map((cart) => (
-            <TableRow key={cart.ID}>
-              <TableCell>{cart.ID}</TableCell>
+            <TableRow key={cart.id}>
+              <TableCell>{cart.id}</TableCell>
               <TableCell>{cart.name}</TableCell>
               <TableCell>{cart.cost}</TableCell>
               <TableCell>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleCartClick(cart.ID)}
+                  onClick={() => handleCartClick(cart.id)}
                 >
                   View Details
                 </Button>
@@ -56,7 +56,7 @@ const CartsList = ({ carts }) => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleSwitchCarts(cart.ID)}
+                  onClick={() => handleSwitchCarts(cart.id)}
                 >
                   Switch carts
                 </Button>

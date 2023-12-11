@@ -8,7 +8,7 @@ const ProductList = ({ productList }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>ID</TableCell>
+            <TableCell>id</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Description</TableCell>
             <TableCell>Cost</TableCell>

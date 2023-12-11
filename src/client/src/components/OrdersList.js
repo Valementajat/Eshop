@@ -26,11 +26,11 @@ const OrdersList = ({ orders, isAdmin=false }) => {
 
   const filteredOrders = orders.filter(
     (order) => 
-      order.ID.toString().includes(filter) ||
+      order.id.toString().includes(filter) ||
       order.orderDate.includes(filter) ||
       order.state.includes(filter) ||
       order.cost.toString().includes(filter) ||
-      (isAdmin && order.user_ID.toString().includes(filter))
+      (isAdmin && order.user_id.toString().includes(filter))
     );
 
   const sortedOrders = filteredOrders.sort((a, b) => {
@@ -56,11 +56,11 @@ const OrdersList = ({ orders, isAdmin=false }) => {
             <TableRow>
               <TableCell>
                 <TableSortLabel
-                  active={orderBy === 'ID'}
-                  direction={orderBy === 'ID' ? order : 'asc'}
-                  onClick={() => handleSort('ID')}
+                  active={orderBy === 'id'}
+                  direction={orderBy === 'id' ? order : 'asc'}
+                  onClick={() => handleSort('id')}
                 >
-                  ID
+                  id
                 </TableSortLabel>
               </TableCell>
               <TableCell>
@@ -93,11 +93,11 @@ const OrdersList = ({ orders, isAdmin=false }) => {
               {isAdmin && (
                 <TableCell>
                   <TableSortLabel
-                    active={orderBy === 'user_ID'}
-                    direction={orderBy === 'user_ID' ? order : 'asc'}
-                    onClick={() => handleSort('user_ID')}
+                    active={orderBy === 'user_id'}
+                    direction={orderBy === 'user_id' ? order : 'asc'}
+                    onClick={() => handleSort('user_id')}
                   >
-                    User ID
+                    User id
                   </TableSortLabel>
                 </TableCell>
               )}
@@ -107,17 +107,17 @@ const OrdersList = ({ orders, isAdmin=false }) => {
           <TableBody>
             {sortedOrders.map((order) => {
               return (
-              <TableRow key={order.ID}>
-                <TableCell>{order.ID}</TableCell>
+              <TableRow key={order.id}>
+                <TableCell>{order.id}</TableCell>
                 <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
                 <TableCell>{order.state}</TableCell>
                 <TableCell>{order.cost}</TableCell>
-                {isAdmin && <TableCell>{order.user_ID}</TableCell>}
+                {isAdmin && <TableCell>{order.user_id}</TableCell>}
                 <TableCell>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => handleOrderClick(order.ID)}
+                  onClick={() => handleOrderClick(order.id)}
                 >
                   View Details
                 </Button>

@@ -21,7 +21,7 @@ const CartDetail = () => {
   const [cartProducts, setCartProducts]  = useState(null)
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // Assume you have a function to get cart details by ID
+  // Assume you have a function to get cart details by id
   useEffect(() => {
     console.log(id);
     if (!user || !user.token) {
@@ -67,14 +67,14 @@ const CartDetail = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
+              <TableCell>id</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Cost</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow key={cartDetails.ID}>
-              <TableCell>{cartDetails.ID}</TableCell>
+            <TableRow key={cartDetails.id}>
+              <TableCell>{cartDetails.id}</TableCell>
               <TableCell>{cartDetails.name}</TableCell>
               <TableCell>{cartDetails.cost}</TableCell>
             </TableRow>

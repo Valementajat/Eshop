@@ -16,121 +16,121 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `Cart`
+-- Table structure for table `cart`
 --
 
-DROP TABLE IF EXISTS `Cart`;
+DROP TABLE IF EXISTS `cart`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Cart` (
-  `ID` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `cart` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `cost` float NOT NULL,
   `user_id` int NOT NULL,
-  PRIMARY KEY (`ID`),
+  PRIMARY KEY (`id`),
   KEY `fk_user_cart` (`user_id`),
-  CONSTRAINT `fk_user_cart` FOREIGN KEY (`user_id`) REFERENCES `user` (`ID`) ON DELETE CASCADE
+  CONSTRAINT `fk_user_cart` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Cart`
+-- Dumping data for table `cart`
 --
 
-LOCK TABLES `Cart` WRITE;
-/*!40000 ALTER TABLE `Cart` DISABLE KEYS */;
-INSERT INTO `Cart` VALUES (1,'Johannes1',120,12),(2,'Johannes2',111,12),(3,'takamaki1',1244,12);
-/*!40000 ALTER TABLE `Cart` ENABLE KEYS */;
+LOCK TABLES `cart` WRITE;
+/*!40000 ALTER TABLE `cart` DISABLE KEYS */;
+INSERT INTO `cart` VALUES (1,'Johannes1',120,12),(2,'Johannes2',111,12),(3,'takamaki1',1244,12);
+/*!40000 ALTER TABLE `cart` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `CartItem`
+-- Table structure for table `cart_item`
 --
 
-DROP TABLE IF EXISTS `CartItem`;
+DROP TABLE IF EXISTS `cart_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `CartItem` (
-  `ID` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `cart_item` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `counts` smallint NOT NULL,
-  `costs` float NOT NULL,
-  `cart_ID` int NOT NULL,
-  `product_ID` int NOT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `fk_Cart_Cartitem` (`cart_ID`),
-  KEY `fk_Product_Cartitem` (`product_ID`),
-  CONSTRAINT `fk_Cart_Cartitem` FOREIGN KEY (`cart_ID`) REFERENCES `Cart` (`ID`) ON DELETE CASCADE,
-  CONSTRAINT `fk_Product_Cartitem` FOREIGN KEY (`product_ID`) REFERENCES `product` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `CartItem`
---
-
-LOCK TABLES `CartItem` WRITE;
-/*!40000 ALTER TABLE `CartItem` DISABLE KEYS */;
-INSERT INTO `CartItem` VALUES (1,2,234,2,1),(2,1,123,2,2),(3,23,525,2,5),(4,2,51,2,6),(5,2,123,1,5),(6,2,123,1,15);
-/*!40000 ALTER TABLE `CartItem` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `OrderLine`
---
-
-DROP TABLE IF EXISTS `OrderLine`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `OrderLine` (
-  `ID` int NOT NULL AUTO_INCREMENT,
   `cost` float NOT NULL,
-  `order_ID` int NOT NULL,
-  `product_ID` int NOT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `fk_Orders_OrderLine` (`order_ID`),
-  KEY `fk_Product_OrderLine` (`product_ID`),
-  CONSTRAINT `fk_Orders_OrderLine` FOREIGN KEY (`order_ID`) REFERENCES `Orders` (`ID`) ON DELETE CASCADE,
-  CONSTRAINT `fk_Product_OrderLine` FOREIGN KEY (`product_ID`) REFERENCES `product` (`id`) ON DELETE CASCADE
+  `cart_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_Cart_Cartitem` (`cart_id`),
+  KEY `fk_Product_Cartitem` (`product_id`),
+  CONSTRAINT `fk_Cart_Cartitem` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_Product_Cartitem` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `OrderLine`
+-- Dumping data for table `cart_item`
 --
 
-LOCK TABLES `OrderLine` WRITE;
-/*!40000 ALTER TABLE `OrderLine` DISABLE KEYS */;
-INSERT INTO `OrderLine` VALUES (1,123,1,5),(2,123,1,15),(3,234,2,1),(4,123,2,2),(5,525,2,5),(6,51,2,6);
-/*!40000 ALTER TABLE `OrderLine` ENABLE KEYS */;
+LOCK TABLES `cart_item` WRITE;
+/*!40000 ALTER TABLE `cart_item` DISABLE KEYS */;
+INSERT INTO `cart_item` VALUES (1,2,234,2,1),(2,1,123,2,2),(3,23,525,2,5),(4,2,51,2,6),(5,2,123,1,5),(6,2,123,1,15);
+/*!40000 ALTER TABLE `cart_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Orders`
+-- Table structure for table `order_line`
 --
 
-DROP TABLE IF EXISTS `Orders`;
+DROP TABLE IF EXISTS `order_line`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Orders` (
-  `ID` int NOT NULL AUTO_INCREMENT,
+CREATE TABLE `order_line` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `cost` float NOT NULL,
+  `order_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_order_order_line` (`order_id`),
+  KEY `fk_Product_order_line` (`product_id`),
+  CONSTRAINT `fk_order_order_line` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_Product_order_line` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_line`
+--
+
+LOCK TABLES `order_line` WRITE;
+/*!40000 ALTER TABLE `order_line` DISABLE KEYS */;
+INSERT INTO `order_line` VALUES (1,123,1,5),(2,123,1,15),(3,234,2,1),(4,123,2,2),(5,525,2,5),(6,51,2,6);
+/*!40000 ALTER TABLE `order_line` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `order`
+--
+
+DROP TABLE IF EXISTS `order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order` (
+  `id` int NOT NULL AUTO_INCREMENT,
   `orderDate` date NOT NULL,
   `state` enum('Pending', 'Paid', 'Invoiced', 'In Delivery','Delivered','Canceled') NOT NULL DEFAULT'Pending',
   `cost` float NOT NULL,
-  `user_ID` int NOT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `fk_User_Orders` (`user_ID`),
-  CONSTRAINT `fk_User_Orders` FOREIGN KEY (`user_ID`) REFERENCES `user` (`id`) ON DELETE CASCADE
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_User_order` (`user_id`),
+  CONSTRAINT `fk_User_order` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Orders`
+-- Dumping data for table `order`
 --
 
-LOCK TABLES `Orders` WRITE;
-/*!40000 ALTER TABLE `Orders` DISABLE KEYS */;
-INSERT INTO `Orders` VALUES (1,'2023-12-04','Pending',120,11),(2,'2023-12-05','Pending',111,12);
-/*!40000 ALTER TABLE `Orders` ENABLE KEYS */;
+LOCK TABLES `order` WRITE;
+/*!40000 ALTER TABLE `order` DISABLE KEYS */;
+INSERT INTO `order` VALUES (1,'2023-12-04','Pending',120,11),(2,'2023-12-05','Pending',111,12);
+/*!40000 ALTER TABLE `order` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -152,13 +152,24 @@ CREATE TABLE `product` (
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+CREATE TABLE feedback (
+    id INT PRIMARY KEY,
+    date DATE,
+    comment VARCHAR(255),
+    rating FLOAT CHECK (rating >= 0 AND rating <= 5),
+    user_id INT,
+    product_id INT,
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (product_id) REFERENCES Products(id)
+);
+
 --
 -- Dumping data for table `product`
 --
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'Sata Fé - Peru','Coffee from peru',NULL,'beans',NULL,7.5),(2,'Sata Fé - México','Coffee beans',NULL,'beans',NULL,7.9),(3,'Decaf Don Jebrile - México','Coffee beans',NULL,'beans',NULL,7.92),(4,'Decaf Chiapas - México','Coffee beans',NULL,'beans',NULL,7.95),(5,'Los Montres - Brazil','Coffee beans',NULL,'beans',NULL,8.47),(6,'Huila - Colombia','Coffee beans',NULL,'beans',NULL,8.69),(7,'Baho - Ruanda','Coffee beans',NULL,'beans',NULL,8.47),(8,'FEMALE PRODUCERS, HUEHUETENANGO - GUATEMALA','Coffee beans',NULL,'beans',NULL,8.95),(9,'NAZARETH´S FORMULA II - CARMO DE MINAS, BRAZIL','Coffee beans',NULL,'beans',NULL,9),(10,'CACAO BOMB - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(11,'KETIARA WOMEN\'S COOPERATIVE - SUMATRA','Coffee beans',NULL,'beans',NULL,8.95),(12,'VALLE DEL MANTARO - PERU','Coffee beans',NULL,'beans',NULL,9.9),(13,'YELLOW CATURRA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.9),(14,'ZANCADA - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(15,'SAN JOSÉ, INZA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.95);
+INSERT INTO `product` VALUES (1,'Sata Fé - Peru','Coffee from peru',NULL,'beans',NULL,7.5),(2,'Sata Fé - México','Coffee beans',NULL,'beans',NULL,7.9),(3,'Decaf Don Jebrile - México','Coffee beans',NULL,'beans',NULL,7.92),(4,'Decaf Chiapas - México','Coffee beans',NULL,'beans',NULL,7.95),(5,'Los Montres - Brazil','Coffee beans',NULL,'beans',NULL,8.47),(6,'Huila - Colombia','Coffee beans',NULL,'beans',NULL,8.69),(7,'Baho - Ruanda','Coffee beans',NULL,'beans',NULL,8.47),(8,'FEMALE PRODUCERS, HUEHUETENANGO - GUATEMALA','Coffee beans',NULL,'beans',NULL,8.95),(9,'NAZARETH´S FORMULA II - CARMO DE MINAS, BRAZIL','Coffee beans',NULL,'beans',NULL,9),(10,'CACAO BOMB - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(11,'KETIARA WOMENS COOPERATIVE - SUMATRA','Coffee beans',NULL,'beans',NULL,8.95),(12,'VALLE DEL MANTARO - PERU','Coffee beans',NULL,'beans',NULL,9.9),(13,'YELLOW CATURRA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.9),(14,'ZANCADA - BRAZIL','Coffee beans',NULL,'beans',NULL,9.9),(15,'SAN JOSÉ, INZA - COLOMBIA','Coffee beans',NULL,'beans',NULL,9.95);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
