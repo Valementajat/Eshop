@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../css/App.css";
 import { Button, Container, TextField, Grid } from "@mui/material";
-import { fetchData, deleteData, updateData, insertData, updatedCartItemsQuantity, removeCart, switchCart,createCartFromLocal } from "../api/Api";
+import { fetchData, deleteData, updateData, insertData, updatedCartItemsQuantity, removeCart, switchCart,createCartFromLocal, getRecommendationsWithoutTags, getRecommendationsByTag } from "../api/Api";
 import CardComponent from "../components/CardComponent";
 import { Link } from "react-router-dom";
 import TopAppBarUser from "../components/TopBarComponent";
@@ -20,6 +20,7 @@ class App extends Component {
       reviewUpdate: "",
       user: { name: "", surname: "", isAdmin: false, email: "" },
       showProductForm: false, // New state to show the product form
+      recommendedProducts: [],
     };
   }
   addToCart = (item) => {
@@ -114,10 +115,8 @@ class App extends Component {
     const cartId = this.state.cartId;
 try{
     updatedCartItemsQuantity( itemToRemoves, cartId, 0 ).then((response) => {
-      console.log(itemToRemoves);
       const updatedCartItems = this.state.cartItems.filter(item => item.id !== itemToRemoves.id);
       this.setState({ cartItems: updatedCartItems });
-      console.log(updatedCartItems);
 
     })
     
@@ -154,8 +153,20 @@ try{
     
     try {
       this.setState({ user: JSON.parse(localStorage.getItem("user")) });
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        getRecommendationsWithoutTags(user.id).then((response) => {
+          console.log(response);
+          this.setState({ recommendedProducts: response.data.recommendedProducts })
+        });
+      } else {
+
+        getRecommendationsByTag(["espresso","machine"]).then((response) => {
+          console.log(response);
+          this.setState({ recommendedProducts: response.data.recommendedProducts })
+        });
+      }
         const maybeCartId =  JSON.parse(localStorage.getItem("cartId")) 
-        const user = JSON.parse(localStorage.getItem("user"));
         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
         this.setState({ cartItems });
         if (maybeCartId === undefined || maybeCartId === null) {
@@ -192,20 +203,9 @@ try{
     window.location.replace("/login");
   };
 
-  submit = () => {
-    insertData(this.state).then(() => {
-      alert("success post");
-    });
-    console.log(this.state);
-    document.location.reload();
-  };
+ 
 
-  remove = (id) => {
-    if (window.confirm("Do you want to delete? ")) {
-      deleteData(id);
-      document.location.reload();
-    }
-  };
+ 
 
   clear = () => {
     this.setState({ cartItems: [], cartId: 0 });
@@ -223,8 +223,7 @@ try{
 
   switchCarts = (cartId) => {
     switchCart( cartId ).then((response) => {
-      console.log(cartId);
-      console.log(response);
+      
       this.setState({
         cartItems: response.data.cartItems,
         cartId: response.data.cartId,
@@ -241,13 +240,16 @@ try{
     document.location.reload();
   };
 
+
+  
   render() {
     if (!Array.isArray(this.state.fetchData)) {
       return <div>Loading...</div>;
     }
-
+    const { recommendedProducts } = this.state;
     const user = this.state.user;
 
+  
     return (
       <div className="App">
             <div>
@@ -312,11 +314,26 @@ try{
               updateQuantity={this.updateQuantity} // Pass the updateQuantity function
             />
         </div>
-       
-
         <br />
         <hr />
         <br />
+        {recommendedProducts.length > 0 && (
+          <Container>
+            <h2>Recommended Products</h2>
+            <br />
+
+                  <Grid container spacing={2}>
+                  <CardComponent
+                    data={recommendedProducts}
+                    addToCart={this.addToCart}
+                  />
+                </Grid>
+          </Container>
+        )}
+       
+        <br />
+        <h2>Available Products</h2>
+        <br />  <br />
         <Container>
           <Grid container spacing={2}>
             <CardComponent  

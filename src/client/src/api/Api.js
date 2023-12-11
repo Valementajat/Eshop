@@ -97,8 +97,16 @@ export const getProductById = (id) => {
 }
 export const getReviewsByProductId = (id) => {
   console.log("Product details");
-}
+};
 
 export const addReview = (id, newReview) => {
   console.log("Product details");
-}
+};
+
+export const getRecommendationsWithoutTags = (userId) => {
+  return axios.post('/api/user/getRecommendationsWithoutTags', {params: {userId}})
+};
+
+export const getRecommendationsByTag = (tags) => {
+  return axios.post('/api/user/getRecommendationsByTag', {params: {tags}})
+};
