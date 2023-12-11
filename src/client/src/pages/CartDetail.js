@@ -48,6 +48,7 @@ const CartDetail = () => {
     console.log(`Turning cart ${id} into an order`);
     createUserOrder( parseInt(id), user.id ).then((response) => {
       handleDeleteCart();
+      localStorage.removeItem("cartId");
 
     });
     
