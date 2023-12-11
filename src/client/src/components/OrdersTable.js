@@ -197,16 +197,16 @@ export default function OrdersTable({ orders }) {
   const rows = orders || [];
   
   const handleRedirectToOrderDetails = () => {
-    const selectedOrderId = selected[0]; // Get the ID of the selected order
+    const selectedOrderId = selected[0]; // Get the id of the selected order
     window.location.replace("/admin/orders/"+selectedOrderId);
   }
   
   const headCells = [
     {
-      id: "ID",
+      id: "id",
       numeric: true,
       disablePadding: false,
-      label: "ID",
+      label: "id",
     },
     {
       id: "orderDate",
@@ -228,10 +228,10 @@ export default function OrdersTable({ orders }) {
     },
     //For admins maybe?
     {
-      id: "user_ID",
+      id: "user_id",
       numeric: true,
       disablePadding: false,
-      label: "User ID",
+      label: "User id",
     },
   ];
 
@@ -327,17 +327,17 @@ export default function OrdersTable({ orders }) {
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.ID);
+                const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.ID)}
+                    onClick={(event) => handleClick(event, row.id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.ID}
+                    key={row.id}
                     selected={isItemSelected}
                     sx={{ cursor: "pointer" }}
                   >

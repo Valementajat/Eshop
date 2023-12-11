@@ -2,7 +2,8 @@
 import React from 'react';
 import { Card, CardContent, Typography, Grid, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit'; // Import EditIcon from Material-UI
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+
 
 const CardComponent = ({ data, addToCart }) => {
   const navigate = useNavigate();
@@ -23,9 +24,11 @@ const CardComponent = ({ data, addToCart }) => {
         <Grid item xs={12} sm={6} md={4} key={index}>
           <Card>
             <CardContent>
+              <Link to={`/product/${item.id}`}>
               <Typography variant="h6" component="h2">
                 {item.name}
               </Typography> 
+              </Link>
               <Typography variant="body2" color="textSecondary">
                 Description: {item.description}
               </Typography>

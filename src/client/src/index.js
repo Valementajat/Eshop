@@ -14,6 +14,7 @@ import Ufooter from "./components/Footer";
 import CartDetail from './pages/CartDetail';
 import Cart from './pages/Cart';
 import OrderDetail from './pages/OrderDetail';
+import ProductPage from './pages/ProductPage';
 
 const root = createRoot(document.getElementById('root'));
 
@@ -37,8 +38,9 @@ root.render(
         <Route exact path="/admin/orders/:id" element={<OrderUpdate />} />
 
         <Route exact path="/orders/:id" element={<OrderDetail />} />
+        <Route exact path="/product/:productId" element={<ProductPage />} />
 
-
+        
 
       </Routes>
     </Router>

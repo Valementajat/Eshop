@@ -72,6 +72,7 @@ export const updateOrderState = (id, data) => {
 
 };
 export const addToCart = (userId, item, cartId) => {
+  console.log(userId, item, cartId)
   return axios.post('/api/user/addToCart', {params: {userId, item, cartId}})
 };
 export const updatedCartItemsQuantity = ( itemToUpdate, cartId, newQuantity ) => {
@@ -89,3 +90,15 @@ export const switchCart = (cartId) => {
 export const createCartFromLocal = (items,userId) => {
   return axios.post('/api/user/createCartFromLocal', {params: {items,userId}})
 };
+
+
+export const getProductById = (id) => {
+  return axios.get(`/api/product/details/${id}`);
+}
+export const getReviewsByProductId = (id) => {
+  console.log("Product details");
+}
+
+export const addReview = (id, newReview) => {
+  console.log("Product details");
+}
