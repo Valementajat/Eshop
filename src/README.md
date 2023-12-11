@@ -25,10 +25,11 @@
     Make sure to replace `<repository_url>` with the actual URL of the repository.
 
 3. **Build and Run the Docker Environment:**
-    Navigate to the root folder of the project in the terminal and run:
+    Navigate to the root folder of the project where the "docker-compose.eaxmple.yaml" file is located and create a copy named "docker-compose.yaml". Change the default configuration if needed. In the same locationa as the "docker-compose.yaml" use the terminal and  run:
     ```
     docker-compose up --build
     ```
+     If you experience errors, for example hinting to "Not enough memory", check the README.md step 7
 
 4. **Access the Environment:**
     After the environment has started, access it through your web browser using the following URL:
@@ -134,6 +135,33 @@
         ADMINER_DEFAULT_SERVER: mysql_db
     ```
     Access it from the web browser port 8000.
+
+7. **Setting up RAM for WSL2:**
+    After installing Docker in Windows, changing settings for Docker requires configuring the Windows Subsystem for Linux version 2 (WSL2) to allocate the desired amount of memory and processing power. 
+
+    To configure WSL2 and Docker's resources, follow these steps:
+
+    1. Shut down Docker and any other running instances of WSL2 by opening a command prompt and executing the command:
+       ```bash
+       wsl --shutdown
+       ```
+
+    2. Create a `.wslconfig` file to set global configurations for all Linux distributions running on WSL2:
+       - Open File Explorer and navigate to `%UserProfile%` to access your profile directory in Windows.
+       - Create a new file named `.wslconfig` (ensure there are no `.txt` extensions).
+       
+    3. Add the following commands to the `.wslconfig` file to configure Docker resources (adjust as needed for your system's requirements):
+       ```bash
+       [wsl2]
+       memory=4GB  # Limits VM memory to 4GB, modify as needed using GB or MB, recommended is at least 4GB to avoid build errors.
+       processors=6  # Sets the VM to use 6 virtual processors, change for suitable amount for your computer.
+       swap=4GB  # Sets swap storage space to 4GB, default if 25% of your max ram.
+       # Add other configurations as per your system's needs
+       ```
+       
+    4. Save the `.wslconfig` file and start Docker to apply the changes. Complete restart of the computer is recommended.
+
+    Ensure to modify the memory, processor, and swap values according to your system's requirements and available resources.
 
 ## Notes
 - Make sure that no other services are running on the ports that the project intends to use or change the port from docker-compose.yaml.
