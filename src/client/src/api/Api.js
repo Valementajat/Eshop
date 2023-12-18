@@ -97,9 +97,13 @@ export const getProductById = (id) => {
   
 }
 export const getReviewsByProductId = (id) => {
-  console.log("Product details");
+  return axios.get(`/api/feedback/get/product/${id}`);
 }
 
-export const addReview = (id, newReview) => {
-  console.log("Product details");
+export const addReview = (productId, userId, review) => {
+  return axios.post(`/api/feedback/add`, {params: {productId, userId, review}});
 }
+
+export const deleteReview = (id) => {
+  return axios.delete(`/api/feedback/delete/${id}`);
+};

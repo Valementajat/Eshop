@@ -719,3 +719,98 @@ app.get("/product/details/:id", async (req, res) => {
 
 
 
+app.post("/feedback/add", (req, res) => {
+  const data = req.body.params
+  console.log(data);
+
+  const product_id = data.productId;
+  const {comment, rating} = data.review;
+  const user_id = data.userId;
+  const insertQuery = `
+  INSERT INTO feedback 
+  (\`date\`, comment, rating, user_id, product_id) 
+  VALUES (NOW(), ?, ?, ?, ?);
+  `
+  db.query(insertQuery, [comment, parseFloat(rating), user_id, product_id], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send("Inserted successfully");
+    }
+  });
+});
+
+app.get("/feedback/get/user/:id", (req, res) => {
+
+  const id = req.params.id;
+
+  const fetchQuery = `
+  SELECTS * FROM feedback WHERE user_id = ?;
+  `
+  db.query(fetchQuery, [id], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(result);
+    }
+  });
+});
+
+app.get("/feedback/get/product/:id", (req, res) => {
+
+  const id = req.params.id;
+
+  const fetchQuery = `
+  SELECT
+    f.id,
+    f.comment,
+    f.rating,
+    u.id AS user_id,
+    u.email
+FROM
+    feedback f
+JOIN
+    user u ON f.user_id = u.id 
+WHERE
+    f.product_id = ?;
+  `
+  db.query(fetchQuery, [id], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(result);
+
+    }
+  });
+});
+
+app.get("/feedback/get/:product_id/:user_id", (req, res) => {
+
+  const product_id = req.params.product_id;
+  const user_id = req.params.user_id;
+
+  const fetchQuery = `
+  SELECT * FROM feedback WHERE (product_id, user_id) = (?, ?);
+  `
+  db.query(fetchQuery, [product_id, user_id], (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(result);
+
+    }
+  });
+});
+
+
+app.delete("/feedback/delete/:id", (req, res) => {
+  const id = req.params.id;
+  const deleteQuery = "DELETE FROM feedback WHERE id = ?";
+  db.query(deleteQuery, id, (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send("Deleted successfully");
+    }
+  });
+});

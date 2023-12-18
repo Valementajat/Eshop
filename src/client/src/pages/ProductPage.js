@@ -8,6 +8,7 @@ import {
   addToCart,
   createCartFromLocal,
   switchCart,
+  deleteReview,
 } from "../api/Api"; // Import your API functions
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -42,11 +43,15 @@ const ProductPage = () => {
   const location = useLocation();
 
   const { id } = useParams();
+    const [localUser, setLocalUser] = useState(null)
   const [product, setProduct] = useState(null);
   const [productQty, setProductQty] = useState(0);
   const [reviews, setReviews] = useState([]);
+  const [userLeftReview, setUserLeftReview] = useState(false);
   const [cartId, setCartId] = useState(0);
-  const [cartItems, setCartItems] = useState(JSON.parse(localStorage.getItem("cartItems")) || []  )
+  const [cartItems, setCartItems] = useState(
+    JSON.parse(localStorage.getItem("cartItems")) || []
+  );
 
   const [newReview, setNewReview] = useState({
     comment: "",
@@ -54,76 +59,72 @@ const ProductPage = () => {
   });
 
   useEffect(() => {
+    setLocalUser(JSON.parse(localStorage.getItem("user")));
     // Fetch product data and reviews from the server using the product ID
     getProductAndReviews();
     getCartItems();
     setProductQty(getProductQty());
-    console.log("On Load Info: ");
-    console.log("CartID: ", cartId);
-    console.log("CartItems: ", cartItems);
-    console.log("ProductQty: ", productQty);
 
   }, []);
 
   useEffect(() => {
     setProductQty(getProductQty());
-    console.log("On Change Info: ");
-    console.log("CartID: ", cartId);
-    console.log("CartItems: ", cartItems);
-    console.log("ProductQty: ", productQty);
+   
+  }, [cartItems, cartId, productQty]);
 
-  }, [cartItems, cartId, productQty])
-
-
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    reviews.map((review) => {
+      setUserLeftReview(false); 
+      if (review.user_id === user.id) {
+        setUserLeftReview(true)
+      }
+    })
+  }, [reviews, userLeftReview])
   const getCartItems = () => {
     try {
-        const maybeCartId = JSON.parse(localStorage.getItem("cartId")).id
-        const user = JSON.parse(localStorage.getItem("user"));
-        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        // Get Cart Items from server
-        setCartItems(cartItems);
-        if (maybeCartId === undefined || maybeCartId === null) {
+      const maybeCartId = JSON.parse(localStorage.getItem("cartId")).id;
+      const user = JSON.parse(localStorage.getItem("user"));
+      const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      // Get Cart Items from server
+      setCartItems(cartItems);
+      if (maybeCartId === undefined || maybeCartId === null) {
+        setCartId(0);
 
-          setCartId(0);
-
-          if (user && cartItems.length > 0) {
-            createCartFromLocal(cartItems, user.id).then((response) => {
-              setCartItems(response.data.cartItemss);
-              setCartId(response.data.cartId);
-              localStorage.removeItem("cartItems");
-              localStorage.setItem('cartId', JSON.stringify({id:response.data.cartId}));
-      
-            })
-
-           } 
-        } else  {
-        setCartId(maybeCartId)
-
-          switchCarts(maybeCartId);
-
+        if (user && cartItems.length > 0) {
+          createCartFromLocal(cartItems, user.id).then((response) => {
+            setCartItems(response.data.cartItemss);
+            setCartId(response.data.cartId);
+            localStorage.removeItem("cartItems");
+            localStorage.setItem(
+              "cartId",
+              JSON.stringify({ id: response.data.cartId })
+            );
+          });
         }
+      } else {
+        setCartId(maybeCartId);
 
+        switchCarts(maybeCartId);
+      }
     } catch (err) {}
-  } 
+  };
 
   const switchCarts = (cid) => {
-    switchCart( cid ).then((response) => {
+    switchCart(cid).then((response) => {
+      setCartItems(response.data.cartItems);
 
-      setCartItems(
-        response.data.cartItems)
-
-        setCartId(response.data.cartId)
-        // You might receive updated cart data in response, adjust this part accordingly
-        // Make sure the API response structure matches your state structure
-        // cartId: response.data.cartId, // Update cartId if necessary
+      setCartId(response.data.cartId);
+      // You might receive updated cart data in response, adjust this part accordingly
+      // Make sure the API response structure matches your state structure
+      // cartId: response.data.cartId, // Update cartId if necessary
     });
-
-  }
+  };
 
   const getProductQty = () => {
     let count = 0;
     cartItems.map((item) => {
-      
       if (item.id === product.id) {
         // Ensure the new quantity is a valid number
         count = item.quantity;
@@ -143,30 +144,34 @@ const ProductPage = () => {
       });
 
     // // Fetch reviews for the product from the server using the product ID
-    // getReviewsByProductId(id)
-    //   .then(response => {
-    //     setReviews(response.data);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error fetching reviews:', error);
-    //   });
+    getReviewsByProductId(id)
+      .then((response) => {
+        setReviews(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching reviews:", error);
+      });
   };
 
   const handleAddReview = () => {
+    console.log("Add reviews");
     // Add a new review to the server
-    // addReview(id, newReview)
-    //   .then(() => {
-    //     // After adding the review, refresh the reviews
-    //     getProductAndReviews();
-    //     // Clear the newReview state
-    //     setNewReview({
-    //       comment: '',
-    //       rating: 0,
-    //     });
-    //   })
-    //   .catch(error => {
-    //     console.error('Error adding review:', error);
-    //   });
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    addReview(product.id, user.id, newReview)
+      .then(() => {
+        // After adding the review, refresh the reviews
+        getProductAndReviews();
+        // Clear the newReview state
+        setNewReview({
+          comment: "",
+          rating: 0,
+        });
+      })
+      .catch((error) => {
+        console.error("Error adding review:", error);
+      });
   };
 
   const handleAddToCart = () => {
@@ -187,7 +192,10 @@ const ProductPage = () => {
 
             setCartItems(response.data.cartItems);
             setCartId(response.data.cartId);
-            localStorage.setItem("cartId", JSON.stringify({ id: response.data.cartId }));
+            localStorage.setItem(
+              "cartId",
+              JSON.stringify({ id: response.data.cartId })
+            );
           })
           .catch((error) => {
             console.error("Error adding product to cart:", error);
@@ -222,7 +230,7 @@ const ProductPage = () => {
                 // Ensure the new quantity is a valid number
                 const quantity = parseInt(newQuantity);
                 setProductQty(quantity);
-                
+
                 return { ...item, quantity: isNaN(quantity) ? 0 : quantity };
               }
               return item;
@@ -272,6 +280,13 @@ const ProductPage = () => {
     handleUpdateQuantity(item);
   };
 
+  const handleRemoveReview = (review_id) => {
+    deleteReview(review_id).then((res) => {
+      console.log(res);
+      window.location.reload()
+    })
+  }
+
   return (
     <Container maxWidth="md">
       {product && (
@@ -302,25 +317,23 @@ const ProductPage = () => {
             </Typography>
           )}
           {productQty === 0 ? (
-            <Button variant="contained" onClick={handleAddToCart}>Add to Cart</Button>
+            <Button variant="contained" onClick={handleAddToCart}>
+              Add to Cart
+            </Button>
           ) : (
             <>
               <Button onClick={() => handleRemoveFromCart(product)}>
                 Remove
               </Button>
               <Button
-                onClick={() =>
-                  handleQuantityUpdate(parseInt(productQty) + 1)
-                }
+                onClick={() => handleQuantityUpdate(parseInt(productQty) + 1)}
               >
                 <AddIcon />
               </Button>
               {productQty}
               <Button
                 onClick={() =>
-                  handleQuantityUpdate(
-                    Math.max(parseInt(productQty) - 1, 1)
-                  )
+                  handleQuantityUpdate(Math.max(parseInt(productQty) - 1, 1))
                 }
               >
                 <RemoveIcon />
@@ -330,55 +343,67 @@ const ProductPage = () => {
         </Paper>
       )}
 
-      <Paper style={{ padding: "16px", marginTop: "16px" }}>
-        <Typography variant="h5">Reviews</Typography>
-        <List>
-          {reviews.map((review) => (
-            <ListItem key={review.id}>
-              <ListItemText
-                primary={review.comment}
-                secondary={`Rating: ${review.rating} | Date: ${review.date}`}
-              />
-            </ListItem>
-          ))}
-        </List>
-
-        <Typography variant="h6" style={{ marginTop: "16px" }}>
-          Add a Review
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Comment"
-              fullWidth
-              value={newReview.comment}
-              onChange={(e) =>
-                setNewReview({ ...newReview, comment: e.target.value })
-              }
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Rating"
-              type="number"
-              fullWidth
-              value={newReview.rating}
-              onChange={(e) =>
-                setNewReview({ ...newReview, rating: e.target.value })
-              }
-              inputProps={{ min: 0, max: 5 }}
-            />
-          </Grid>
-        </Grid>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddReview}
-          style={{ marginTop: "16px" }}
-        >
-          Add Review
-        </Button>
-      </Paper>
+      {reviews && (
+        <Paper style={{ padding: "16px", marginTop: "16px" }}>
+          <Typography variant="h5">Reviews</Typography>
+          <List>
+            {reviews.map((review) => (
+              <ListItem key={review.id}>
+                <ListItemText
+                  primary={review.comment}
+                  secondary={`Rating: ${review.rating} | Date: ${new Date(
+                    review.date
+                  ).toLocaleDateString()} | By ${review.email}`}
+                />
+                {localUser && localUser.role == "admin" && <Button    variant="contained"
+                color="primary"
+                onClick={() => handleRemoveReview(review.id)}
+                style={{ marginTop: "16px" }}>Remove</Button>}
+              </ListItem>
+            ))}
+          </List>
+          { !userLeftReview && 
+            <Paper style={{ padding: "16px", marginTop: "16px" }}>
+              {console.log(userLeftReview)}
+              <Typography variant="h6" style={{ marginTop: "16px" }}>
+                Add a Review
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Comment"
+                    fullWidth
+                    value={newReview.comment}
+                    onChange={(e) =>
+                      setNewReview({ ...newReview, comment: e.target.value })
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    label="Rating"
+                    type="number"
+                    fullWidth
+                    value={newReview.rating}
+                    onChange={(e) =>
+                      setNewReview({ ...newReview, rating: e.target.value })
+                    }
+                    inputProps={{ min: 0, max: 5 }}
+                  />
+                </Grid>
+              </Grid>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddReview}
+                style={{ marginTop: "16px" }}
+              >
+                Add Review
+              </Button>
+            </Paper>
+          }
+        </Paper>
+      )}
     </Container>
   );
 };
