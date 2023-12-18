@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../css/App.css";
 import { Button, Container, TextField, Grid } from "@mui/material";
-import { fetchData, deleteData, updateData, insertData, updatedCartItemsQuantity, removeCart, switchCart,createCartFromLocal } from "../api/Api";
+import { fetchData, deleteData, updateData, insertData, updatedCartItemsQuantity, removeCart, switchCart,createCartFromLocal, getCartDetails } from "../api/Api";
 import CardComponent from "../components/CardComponent";
 import { Link } from "react-router-dom";
 import TopAppBarUser from "../components/TopBarComponent";
@@ -44,7 +44,7 @@ class App extends Component {
           // Make sure the API response structure matches your state structure
           // cartId: response.data.cartId, // Update cartId if necessary
         });
-        localStorage.setItem('cartId', JSON.stringify({id:cartId}));
+        localStorage.setItem('cartId', JSON.stringify({id:response.data.cartId}));
 
       }).catch((error) => {
         console.error('Error adding item to cart:', error);
@@ -177,7 +177,7 @@ try{
       
             })
 
-           }
+           } 
         } else  {
           this.switchCarts(maybeCartId.id);
         }
@@ -323,6 +323,8 @@ try{
               
               data={this.state.fetchData} 
               addToCart={this.addToCart} 
+              cartId={this.state.cartId}
+
             />
           </Grid>
         </Container>

@@ -78,6 +78,7 @@ const Product = ({ product }) => {
           fullWidth
           margin="normal"
         />
+       
         <Button type="submit" variant="contained" color="primary">
           {product ? 'Update Product' : 'Add Product'}
         </Button>

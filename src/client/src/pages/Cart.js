@@ -25,7 +25,7 @@ const Cart = () => {
 
   return (
     <div>
-      <h2>List of Orders</h2>
+      <h2>List of Carts</h2>
       <CartsList carts={carts} />
     </div>
   );

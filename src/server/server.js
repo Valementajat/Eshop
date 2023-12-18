@@ -137,35 +137,35 @@ app.post("/user/login", async (req, res) => {
 });
 
 // Update user endpoint
-app.put('/user/update', async (req, res) => {
+// app.put('/user/update', async (req, res) => {
 
-  const { params } = req.body;
+//   const { params } = req.body;
 
-  try {
-    // Check if the email and verification token match in the database
-    const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
-    console.log(users);
-    if (users.length > 0) {
-      const user = users[0];
+//   try {
+//     // Check if the email and verification token match in the database
+//     const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
+//     console.log(users);
+//     if (users.length > 0) {
+//       const user = users[0];
 
-      if (user.activated) {
-        // If the account is already activated, send back a 401 error
-        return res.status(401).json({ message: "Account already activated" });
-      }
+//       if (user.activated) {
+//         // If the account is already activated, send back a 401 error
+//         return res.status(401).json({ message: "Account already activated" });
+//       }
 
-      // Update the 'activated' field to true
-      res.status(400).json({ message: 'Invalid verification details' });
-      await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
+//       // Update the 'activated' field to true
+//       res.status(400).json({ message: 'Invalid verification details' });
+//       await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
 
-      res.json({ message: 'Verification successful' });
-    } else {
-      res.status(402).json({ message: 'Invalid verification details' });
-    }
-  } catch (error) {
-    console.error("Error occurred during verification:", error);
-    res.status(500).json({ message: "Error verifying email" });
-  }
-});
+//       res.json({ message: 'Verification successful' });
+//     } else {
+//       res.status(402).json({ message: 'Invalid verification details' });
+//     }
+//   } catch (error) {
+//     console.error("Error occurred during verification:", error);
+//     res.status(500).json({ message: "Error verifying email" });
+//   }
+// });
 
 
 
@@ -309,6 +309,7 @@ app.post('/user/createCartFromLocal', async (req, res) => {
     // Create a new cart first and get the cart id
     const [newCart] = await db.promise().query('INSERT INTO cart (name, user_id, cost) VALUES (?, ?, ?)', ["NewCart", userId, 0]);
     const cartId = newCart.insertId;
+    console.log(cartId);
 
     // Perform operations to add items to the cart in the database
     // Assuming 'CartItems' table has columns: id (auto-increment), cart_id, product_id, quantity, cost
@@ -679,28 +680,42 @@ app.listen(3001, () => {
 
 // TODO start here
 app.get("/product/details/:id", async (req, res) => {
+
   const id = req.params.id;
-   const selectQuery = "SELECT * FROM product WHERE id=?"
-   try {
 
-   const [products] = db.promise(selectQuery, id)
-
-    if (err || products.length < 1) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send("Fetched successfully");
-      res.json({product:products[0]})
+  try {
+    // Fetch products information using JOIN operation among cart, cart_item, and product tables
+    const [products] = await db
+      .promise()
+      .query("SELECT * FROM `product` WHERE id=?", [id]);
+    if (products.length != 1) {
+      res.status(501).json({ error: "non-valid `product` number" });
+      return;
     }
+    let product = products[0];
 
-  
-    } catch (error) {
-      console.error("Exception occurred while fetching product details:", error);
-      res
-        .status(501)
-        .json({ error: "Exception occurred while fetching product details" });
-    }
+  //   const [productLinesWithProducts] = await db.promise().query(
+  //     `
+  //   SELECT product_line.*, product.*
+  //   FROM product_line
+  //   JOIN product ON product_line.product_id = product.id
+  //   WHERE product_line.product_id = ?
+  // `,
+  //     [product.id]
+  //   );
 
-  
+  //   product = { ...product, items: productLinesWithProducts };
+  //   console.log(product);
 
+    res.json(product); // Respond with the fetched products
+  } catch (error) {
+    console.error("Exception occurred while fetching user products:", error);
+    res
+      .status(501)
+      .json({ error: "Exception occurred while fetching user products" });
+  }
 
 })
+
+
+

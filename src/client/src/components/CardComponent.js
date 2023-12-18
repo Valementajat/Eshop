@@ -5,7 +5,7 @@ import EditIcon from '@mui/icons-material/Edit'; // Import EditIcon from Materia
 import { useNavigate, Link } from 'react-router-dom';
 
 
-const CardComponent = ({ data, addToCart }) => {
+const CardComponent = ({ data, addToCart, cartId}) => {
   const navigate = useNavigate();
 
   const handleAddToCart = (item) => {
@@ -14,7 +14,7 @@ const CardComponent = ({ data, addToCart }) => {
   const user = JSON.parse(localStorage.getItem('user'));
   const handleEdit = (item) => {
     // Logic for handling edit action for the item
-    navigate(`/product/${item.name}`);
+    navigate(`/product/${item.id}`);
     // Implement your edit functionality here
   };
 
@@ -24,7 +24,7 @@ const CardComponent = ({ data, addToCart }) => {
         <Grid item xs={12} sm={6} md={4} key={index}>
           <Card>
             <CardContent>
-              <Link to={`/product/${item.id}`}>
+              <Link to={`/product/${item.id}`} state={{cartId}}>
               <Typography variant="h6" component="h2">
                 {item.name}
               </Typography> 

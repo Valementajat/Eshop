@@ -94,6 +94,7 @@ export const createCartFromLocal = (items,userId) => {
 
 export const getProductById = (id) => {
   return axios.get(`/api/product/details/${id}`);
+  
 }
 export const getReviewsByProductId = (id) => {
   console.log("Product details");

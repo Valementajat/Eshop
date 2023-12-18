@@ -38,7 +38,7 @@ root.render(
         <Route exact path="/admin/orders/:id" element={<OrderUpdate />} />
 
         <Route exact path="/orders/:id" element={<OrderDetail />} />
-        <Route exact path="/product/:productId" element={<ProductPage />} />
+        <Route exact path="/product/:id" element={<ProductPage />} />
 
         
 
