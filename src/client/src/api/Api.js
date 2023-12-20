@@ -97,6 +97,7 @@ export const getProductById = (id) => {
   
 }
 export const getReviewsByProductId = (id) => {
+
   return axios.get(`/api/feedback/get/product/${id}`);
 }
 
@@ -106,4 +107,14 @@ export const addReview = (productId, userId, review) => {
 
 export const deleteReview = (id) => {
   return axios.delete(`/api/feedback/delete/${id}`);
+
+  console.log("Product details");
+};
+
+export const getRecommendationsWithoutTags = (userId) => {
+  return axios.post('/api/user/getRecommendationsWithoutTags', {params: {userId}})
+};
+
+export const getRecommendationsByTag = (tags) => {
+  return axios.post('/api/user/getRecommendationsByTag', {params: {tags}})
 };

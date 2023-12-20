@@ -388,7 +388,6 @@ app.post('/user/updatedCartItemsQuantity', async (req, res) => {
   app.post('/user/switchCart', async (req, res) => {
     const { params } = req.body;
     const cartId = params.cartId;
-    console.log(params);
       try {
         const [cartItems] = await db.promise().query(`
         SELECT product.*, cart_item.counts AS quantity
@@ -459,7 +458,6 @@ app.get("/user/getCartDetails", async (req, res) => {
   `,
       [userId, cartId, cartId, userId, cartId]
     );
-      console.log({cartProducts, cartDetails});
     res.json({ cartDetails:cartDetails[0], cartProducts }); // Respond with the fetched cart details
   
   } catch (error) {
@@ -507,7 +505,6 @@ app.get("/admin/getOrderInfo", async (req, res) => {
     );
 
     order = { ...order, items: orderLinesWithProducts };
-    console.log(order);
 
     res.json({ order }); // Respond with the fetched orders
   } catch (error) {
@@ -517,6 +514,121 @@ app.get("/admin/getOrderInfo", async (req, res) => {
       .json({ error: "Exception occurred while fetching user orders" });
   }
 });
+app.post('/user/getRecommendationsByTag', async (req, res) => {
+  try {
+    const { params } = req.body;
+    const tags = params.tags;
+   
+// Step 1: Search user's most demanding tags (in order)
+
+
+ // Get all tags into a single array
+
+const recommendedProducts = [];
+const uniqueProducts = new Set(); // Use a Set to maintain unique product IDs
+ // Define the weights for average rating and review count
+ const ratingWeight = 0.7; // Weight for average rating
+ const reviewCountWeight = 0.3; // Weight for review count
+// Step 2: For each tag, split and count occurrences, then fetch recommendations
+
+for (const tag of tags) {
+  const trimmedTag = tag.trim(); // Split tags into an array
+ 
+
+    // Using the recommendation by tag endpoint for each tag
+    const [productsByTag] = await db.promise().query(`
+      SELECT product.*, AVG(feedback.rating) AS average_rating, COUNT(feedback.id) AS review_count
+      FROM product
+      LEFT JOIN feedback ON product.id = feedback.product_id
+      WHERE FIND_IN_SET(?, product.tags) > 0
+      GROUP BY product.id
+    `, [trimmedTag]); // Use the trimmed tag
+
+
+
+    productsByTag.forEach(product => {
+      if (!uniqueProducts.has(product.id)) { // Check if product ID is not already added
+        product.weightedScore = (product.average_rating * ratingWeight) + (product.review_count * reviewCountWeight);
+        recommendedProducts.push(product);
+        uniqueProducts.add(product.id); // Add product ID to the Set to track uniqueness
+      }
+    });
+}
+
+// Sort the recommendations by weighted score and limit to top 10
+const sortedRecommendedProducts = recommendedProducts
+  .sort((a, b) => b.weightedScore - a.weightedScore)
+  .slice(0, 5);
+
+// Send the sorted recommended products as a response
+return res.json({ message: 'Recommended products retrieved successfully', recommendedProducts: sortedRecommendedProducts });
+} catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Error retrieving recommendations', error: error.message });
+  }
+});
+
+
+  
+
+app.post('/user/getRecommendationsWithoutTags', async (req, res) => {
+  try {
+    const { params } = req.body;
+    const userId = params.userId;
+
+// Step 1: Search user's most demanding tags (in order)
+ const [userTagsRows] = await db.promise().query(`
+      SELECT product.tags
+      FROM product
+      INNER JOIN feedback ON product.id = feedback.product_id
+      WHERE feedback.user_id = ?
+      GROUP BY product.tags
+      ORDER BY COUNT(*) DESC
+    `, [userId]);
+
+    const userTags = userTagsRows.map(row => row.tags).join(',').split(','); // Get all tags into a single array
+const recommendedProducts = [];
+const uniqueProducts = new Set(); // Use a Set to maintain unique product IDs
+ // Define the weights for average rating and review count
+ const ratingWeight = 0.7; // Weight for average rating
+ const reviewCountWeight = 0.3; // Weight for review count
+// Step 2: For each tag, split and count occurrences, then fetch recommendations
+
+for (const tag of userTags) {
+  const trimmedTag = tag.trim(); // Split tags into an array
+ 
+    // Using the recommendation by tag endpoint for each tag
+    const [productsByTag] = await db.promise().query(`
+      SELECT product.*, AVG(feedback.rating) AS average_rating, COUNT(feedback.id) AS review_count
+      FROM product
+      LEFT JOIN feedback ON product.id = feedback.product_id
+      WHERE FIND_IN_SET(?, product.tags) > 0
+      GROUP BY product.id
+    `, [trimmedTag]); // Use the trimmed tag
+
+
+    productsByTag.forEach(product => {
+      if (!uniqueProducts.has(product.id)) { // Check if product ID is not already added
+        product.weightedScore = (product.average_rating * ratingWeight) + (product.review_count * reviewCountWeight);
+        recommendedProducts.push(product);
+        uniqueProducts.add(product.id); // Add product ID to the Set to track uniqueness
+      }
+    });
+}
+
+// Sort the recommendations by weighted score and limit to top 10
+const sortedRecommendedProducts = recommendedProducts
+  .sort((a, b) => b.weightedScore - a.weightedScore)
+  .slice(0, 5);
+console.log(sortedRecommendedProducts);
+// Send the sorted recommended products as a response
+return res.json({ message: 'Recommended products retrieved successfully', recommendedProducts: sortedRecommendedProducts });
+} catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Error retrieving recommendations', error: error.message });
+  }
+});
+
 
 app.get("/admin/getOrderProductsItems", async (req, res) => {
   let { token, orderId } = req.query; // Get the userId from query parameter
@@ -559,7 +671,6 @@ app.get("/admin/getAllOrders", async (req, res) => {
 app.put("/admin/updateOrderState/:id", (req, res) => {
   const id = req.params.id;
   const state = req.body.state;
-  console.log(req.body.state);
   const token = req.headers.authorization.split(" ")[1];
 
   if (!verifyAdmin(token)) {
@@ -588,7 +699,6 @@ app.post("/user/createUserOrder", async (req, res) => {
     const [cart] = await db
       .promise()
       .query("SELECT * FROM cart WHERE id = ?", [cartId]);
-    console.log(UserId);
     // Create a new order based on the fetched cart details
     const [result] = await db
       .promise()

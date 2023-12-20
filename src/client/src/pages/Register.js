@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, TextField, Alert } from "@mui/material";
+import { Button, TextField, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { Link, useHistory } from "react-router-dom";
 import { registerUser } from "../api/Api";
 import TopAppBar from '../components/AddbarComponent';
@@ -17,6 +17,7 @@ class Register extends Component {
       message: null,
       warning: null,
       error: null,
+      showVerificationPopup: false, // New state property for controlling the popup
     };
 
     const user = JSON.parse(localStorage.getItem('user'));
@@ -67,13 +68,11 @@ class Register extends Component {
 
     try {
       const res = await registerUser({ name, surname, email, password });
-      const token = res.data.token;
-      localStorage.setItem('user', JSON.stringify({id:res.data.id, token, name, surname, email, role:res.data.role}));
-
+     
       // Reset error state on successful registration
       this.setState({ error: null });
       this.setState({ message: res.data.message });
-      window.location.replace('/');
+      this.setState({ showVerificationPopup: true });
 
     } catch (error) {
       // Handle specific error codes and set the error state accordingly
@@ -88,7 +87,11 @@ class Register extends Component {
       }
     }
   };
-
+  handleCloseVerificationPopup = () => {
+    // Redirect to the front page after closing the verification popup
+    this.setState({ showVerificationPopup: false });
+    window.location.replace('/');
+  };
   render() {
     return (
       <div className="login-container">
@@ -156,6 +159,21 @@ class Register extends Component {
             <Alert severity="error">{this.state.error}</Alert>
           )}
         </div>
+
+        <Dialog open={this.state.showVerificationPopup} onClose={() => this.handleCloseVerificationPopup()}>
+          <DialogTitle>Verify Your Account</DialogTitle>
+          <DialogContent>
+            <p>
+              Please check your inbox for a verification email and verify your account before proceeding.
+            </p>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => this.handleCloseVerificationPopup()} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </div>
     );
   }
