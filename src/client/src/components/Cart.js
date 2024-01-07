@@ -2,8 +2,15 @@ import React from 'react';
 import { List, ListItem, ListItemText, Button, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { useCart } from '../CartContext';
 
-const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
+const Cart = ({ }) => {
+
+//this component is redacted but left here for possible future use
+
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
+
+
   const updatedCartItems = cartItems.reduce((acc, currentItem) => {
     const existingItem = acc.find((item) => item.id === currentItem.id);
 
@@ -18,7 +25,15 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
   const handleQuantityUpdate = (item, newQuantity) => {
     
     updateQuantity(item, newQuantity);
+
   };
+
+  const removeItemFromCart = (item) => {
+    
+    removeFromCart(item);
+
+  };
+
 
   const totalPrice = updatedCartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -40,11 +55,11 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
                 <Typography variant="body2">
                   Total: ${(item.price * item.quantity).toFixed(2)} (Quantity: {item.quantity})
                 </Typography>
-                <Button onClick={() => removeFromCart(item)}>Remove</Button>
-                <Button onClick={() => handleQuantityUpdate(item, item.quantity + 1)}>
+                <Button style={{ color: '#fff' }}  onClick={() => removeItemFromCart(item)}>Remove</Button>
+                <Button style={{ color: '#fff' }} onClick={() => handleQuantityUpdate(item, item.quantity + 1)}>
                   <AddIcon />
                 </Button>
-                <Button onClick={() => handleQuantityUpdate(item, Math.max(item.quantity - 1, 1))}>
+                <Button style={{ color: '#fff' }}  onClick={() => handleQuantityUpdate(item, Math.max(item.quantity - 1, 1))}>
                   <RemoveIcon />
                 </Button>
               </ListItemText>

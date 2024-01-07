@@ -173,7 +173,7 @@ DROP TABLE IF EXISTS `product`;
 CREATE TABLE `product` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
-  `description` varchar(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `description` varchar(2000) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `picture` varchar(50) DEFAULT NULL,
   `tags` varchar(200) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `deprecated` tinyint(1) DEFAULT NULL,

@@ -12,7 +12,7 @@ const UFooter = () => {
             <Link href="#" className="text-reset">
               About us
             </Link>
-            <Link href="#" className="text-reset">
+            <Link href="/login" className="text-reset">
               Contacts
             </Link>
             <Link href="#" className="text-reset">

@@ -15,35 +15,36 @@ import CartDetail from './pages/CartDetail';
 import Cart from './pages/Cart';
 import OrderDetail from './pages/OrderDetail';
 import ProductPage from './pages/ProductPage';
+import ToolbarComponent from "./components/ToolbarComponent";
+import { CartProvider } from './CartContext';
 
 const root = createRoot(document.getElementById('root'));
 
 root.render(
   <>
-    
-    <Router>
-      <Routes>
-        <Route exact path="/" element={<App />} />
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/verify/:email/:token" element={<VerifyEmail />} />
+    <CartProvider>
+      <Router>
+      <ToolbarComponent/>
+        <Routes>
+          <Route exact path="/" element={<App />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/verify/:email/:token" element={<VerifyEmail />} />
 
-        <Route exact path="/signup" element={<Register />} />
-        <Route exact path="/account" element={<Account />} />
-        <Route exact path="/account/update" element={<AccountUpdate />} />
+          <Route exact path="/signup" element={<Register />} />
+          <Route exact path="/account" element={<Account />} />
+          <Route exact path="/account/update" element={<AccountUpdate />} />
 
-        <Route exact path="/cart" element={<Cart />} />
-        <Route exact path="/cart/:id" element={<CartDetail />} />
+          <Route exact path="/cart" element={<Cart />} />
+          <Route exact path="/cart/:id" element={<CartDetail />} />
 
-        <Route exact path="/admin/orders" element={<ManageOrders />} />
-        <Route exact path="/admin/orders/:id" element={<OrderUpdate />} />
+          <Route exact path="/admin/orders" element={<ManageOrders />} />
+          <Route exact path="/admin/orders/:id" element={<OrderUpdate />} />
 
-        <Route exact path="/orders/:id" element={<OrderDetail />} />
-        <Route exact path="/product/:id" element={<ProductPage />} />
-
-        
-
-      </Routes>
-    </Router>
-    <Ufooter />
+          <Route exact path="/orders/:id" element={<OrderDetail />} />
+          <Route exact path="/product/:id" element={<ProductPage />} />
+        </Routes>
+        <Ufooter />
+      </Router>
+    </CartProvider>
   </>
 );
