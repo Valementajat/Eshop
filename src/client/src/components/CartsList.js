@@ -10,8 +10,12 @@ import {
   TableRow,
   Button,
 } from '@mui/material';
+import { useCart } from '../CartContext';
+
 
 const CartsList = ({ carts }) => {
+  const { switchCarts } = useCart(); // Retrieve addToCart function from useCart hook
+
   const navigate = useNavigate();
 
   const handleCartClick = (cartId) => {
@@ -21,7 +25,7 @@ const CartsList = ({ carts }) => {
   };
   const handleSwitchCarts = (cartId) => {
     // Redirect to CartDetailPage when a cart is clicked
-    localStorage.setItem('cartId', JSON.stringify({id:cartId}));
+    switchCarts(cartId)
     alert(`Cart with id ${cartId} has been selected.`);
     
   };
