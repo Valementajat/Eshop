@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, Button } from 'react-bootstrap';
 
 const CartComponent = ({ data, createOrder }) => {
-  console.log("toimiiko ", data);
 
   return  data.map((val, key) => (
         <React.Fragment key={key}>

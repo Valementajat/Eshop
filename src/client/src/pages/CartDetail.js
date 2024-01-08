@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import { Link } from "react-router-dom";
-
+import { useCart } from '../CartContext';
 import {
   Paper,
   Table,
@@ -12,7 +12,7 @@ import {
   TableRow,
   Button,
 } from '@mui/material';
-import { getCartDetails, removeCart, createUserOrder } from '../api/Api';
+import { getCartDetails } from '../api/Api';
 import ProductList from '../components/ProductList';
 
 const CartDetail = () => {
@@ -20,10 +20,10 @@ const CartDetail = () => {
   const [cartDetails, setCartDetails]  = useState(null)
   const [cartProducts, setCartProducts]  = useState(null)
   const user = JSON.parse(localStorage.getItem("user"));
+  const { deleteCart, createOrder } = useCart(); // Retrieve addToCart function from useCart hook
 
   // Assume you have a function to get cart details by id
   useEffect(() => {
-    console.log(id);
     if (!user || !user.token) {
       window.location.replace("/");
       return;
@@ -46,21 +46,17 @@ const CartDetail = () => {
   const handleTurnIntoOrder = () => {
     // Implement logic to turn the cart into an order
     console.log(`Turning cart ${id} into an order`);
-    createUserOrder( parseInt(id), user.id ).then((response) => {
-      handleDeleteCart();
-      
-
-    });
-    
+    createOrder(parseInt(id), user.id )
+    handleDeleteCart({id:cartDetails.id})
+/*     window.location.replace("/cart");
+ */
   };
 
-  const handleDeleteCart = () => {
+  const handleDeleteCart = (cartDetailsId) => {
     // Implement logic to delete the cart
-    removeCart( id ).then((response) => {
-      localStorage.removeItem("cartId");
-    });
-    window.location.replace("/cart");
-  };
+    deleteCart(cartDetailsId);
+     window.location.replace("/cart");
+   };
 
   return (
     <div>
@@ -90,12 +86,11 @@ const CartDetail = () => {
       <Button variant="contained" color="primary" onClick={handleTurnIntoOrder}>
         Turn into Order
       </Button>
-      <Link to="cart">
+      
 
-        <Button variant="contained" color="secondary" onClick={handleDeleteCart}>
+        <Button variant="contained" color="secondary" onClick={() => handleDeleteCart({id:cartDetails.id})}>
           Delete Cart
         </Button>
-      </Link>
 
     </div>
   );

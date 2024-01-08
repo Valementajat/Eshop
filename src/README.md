@@ -111,6 +111,7 @@
     - Database: eshop
     - Username: root
     - Password: MYSQL_ROOT_PASSWORD
+    - port: 9906
     - Ensure that allowPublicKeyRetrieval is enabled from:
     ``` 
     Open DBeaver and navigate to the connection settings for your MySQL connection.

@@ -29,7 +29,7 @@ class AccountUpdate extends Component {
 
     this.setState({
       email: localUser.email,
-      name: localUser.email,
+      name: localUser.name,
       surname: localUser.surname,
     });
   }
@@ -83,11 +83,12 @@ class AccountUpdate extends Component {
       //Get info from the local storage
       const localUser = JSON.parse(localStorage.getItem("user")); 
       const res = await updateUser({ name, surname, email, password, token:localUser.token });
-      const token = res.data.token;
+      const token = res.data.user.token;
+      console.log(res);
       //We save the info to see if someone is logged in 
       localStorage.setItem(
         "user",
-        JSON.stringify({ token, name, surname, email, role: res.data.role })
+        JSON.stringify({ token, name, surname, email, role: res.data.user.role, id:res.data.user.id })
       );
 
       // Reset error state on successful registration

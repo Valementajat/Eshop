@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Button, Grid, Container } from "@mui/material";
+import { Button,  Container } from "@mui/material";
 import { Link } from "react-router-dom";
-import { getUserCarts, createUserOrder, getUserOrders } from "../api/Api";
+import { getUserOrders } from "../api/Api";
 import OrdersList from "../components/OrdersList";
 
 class Account extends Component {
@@ -26,7 +26,6 @@ class Account extends Component {
         this.setState({
           orders: response.data.orders,
         });
-        console.log(response.data);
       });
     } catch (error) {
       console.error("Error fetching user orders:", error);

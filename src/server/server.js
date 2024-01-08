@@ -136,36 +136,38 @@ app.post("/user/login", async (req, res) => {
   }
 });
 
+
+
+
 // Update user endpoint
-// app.put('/user/update', async (req, res) => {
+app.post('/user/verifyEmail', async (req, res) => {
 
-//   const { params } = req.body;
+  const { params } = req.body;
 
-//   try {
-//     // Check if the email and verification token match in the database
-//     const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
-//     console.log(users);
-//     if (users.length > 0) {
-//       const user = users[0];
+  try {
+    // Check if the email and verification token match in the database
+    const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
+    console.log(users);
+    if (users.length > 0) {
+      const user = users[0];
 
-//       if (user.activated) {
-//         // If the account is already activated, send back a 401 error
-//         return res.status(401).json({ message: "Account already activated" });
-//       }
+      if (user.activated) {
+        // If the account is already activated, send back a 401 error
+        return res.status(401).json({ message: "Account already activated" });
+      }
 
-//       // Update the 'activated' field to true
-//       res.status(400).json({ message: 'Invalid verification details' });
-//       await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
+      // Update the 'activated' field to true
+      await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
 
-//       res.json({ message: 'Verification successful' });
-//     } else {
-//       res.status(402).json({ message: 'Invalid verification details' });
-//     }
-//   } catch (error) {
-//     console.error("Error occurred during verification:", error);
-//     res.status(500).json({ message: "Error verifying email" });
-//   }
-// });
+      res.json({ message: 'Verification successful' });
+    } else {
+      res.status(402).json({ message: 'Invalid verification details' });
+    }
+  } catch (error) {
+    console.error("Error occurred during verification:", error);
+    res.status(500).json({ message: "Error verifying email" });
+  }
+});
 
 
 
@@ -174,9 +176,11 @@ app.put('/user/update', async (req, res) => {
 
   try {
     // Verify the token
+    console.log("Token: ",token);
     const decodedToken = jwt.verify(token, jwt_token);
     if (password != "") {
       // Update user information based on the decoded token
+
       await db
         .promise()
         .query(
@@ -195,9 +199,13 @@ app.put('/user/update', async (req, res) => {
     const [updatedUser] = await db
       .promise()
       .query("SELECT * FROM user WHERE id = ?", [decodedToken.id]);
-
+updatedUser[0].token = jwt.sign(
+  { id: updatedUser[0].id, email: updatedUser[0].email },
+  jwt_token
+); 
     res.json({ message: "User updated successfully", user: updatedUser[0] });
   } catch (error) {
+    console.log(error);
     res.status(401).json({ message: "Invalid token" });
   }
 });
@@ -243,8 +251,8 @@ app.post('/user/addToCart', async (req, res) => {
   const { params } = req.body;
   const item = params.item;
   const userId = params.userId;
-  const cartId = params.cartId;
- 
+  const cartId = params.cartId.id;
+
   try {
     // Check if the user exists and is activated
     const [users] = await db.promise().query('SELECT * FROM user WHERE id = ?', [userId]);
@@ -255,9 +263,9 @@ app.post('/user/addToCart', async (req, res) => {
     // Add the item to the cart
     if ( cartId === 0) {
       // If cartId is null, create a new cart for the user
-      const [newCart] = await db.promise().query('INSERT INTO cart (name, user_id, cost) VALUES (?, ?, ?)', ["NewCart" , userId, 0]);
+      const [newCart] = await db.promise().query('INSERT INTO cart (name, user_id, cost) VALUES (?, ?, ?)', ["NewCart" , userId, parseFloat(item.price)]);
       const newCartId = newCart.insertId;
-      await db.promise().query('INSERT INTO cart_item (cart_id, product_id, counts, cost) VALUES (?, ?, ?, ?)', [newCartId, item.id, item.quantity, item.price]);
+      await db.promise().query('INSERT INTO cart_item (cart_id, product_id, counts, cost) VALUES (?, ?, ?, ?)', [newCartId, item.id, item.quantity, parseFloat(item.price)]);
       const [cartItems] = await db.promise().query(`
         SELECT product.*, cart_item.counts AS quantity
         FROM product
@@ -270,10 +278,9 @@ app.post('/user/addToCart', async (req, res) => {
     } else {
 
       const [existingItem] = await db.promise().query('SELECT * FROM cart_item WHERE cart_id = ? AND product_id = ?', [cartId, item.id]);
-
       if (existingItem.length > 0) {
         await db.promise().query('UPDATE cart_item SET counts = ? WHERE id = ?', [existingItem[0].counts + 1, existingItem[0].id]);
-
+        
       } else {
       // Add the item to the existing cart
       await db.promise().query('INSERT INTO cart_item (cart_id, product_id, counts, cost) VALUES (?, ?, ?, ?)', [cartId, item.id, item.quantity, item.price]);
@@ -285,6 +292,18 @@ app.post('/user/addToCart', async (req, res) => {
         WHERE cart_item.cart_id = ?
       `, [cartId]);
 
+      // Calculate the new total cost after adding/modifying items in the cart
+      const [cartItemscost] = await db.promise().query(`
+      SELECT SUM(cost) AS totalCost
+      FROM cart_item
+      WHERE cart_id = ?
+      `, [cartId]);
+
+      const newTotalCost = cartItemscost[0].totalCost || 0; // Retrieve total cost or default to 0 if no items
+
+      // Update the total cost in the cart table
+      await db.promise().query('UPDATE cart SET cost = ? WHERE id = ?', [newTotalCost, cartId]);
+
       return res.json({ message: 'Item added to the existing cart successfully', cartId, cartItems });
     }
   } catch (error) {
@@ -292,9 +311,12 @@ app.post('/user/addToCart', async (req, res) => {
     return res.status(500).json({ message: 'Error adding item to cart' });
   }
 });
+
 app.post('/user/removeCart', async (req, res) => {
   const { params } = req.body;
-  const cartId = params.cartId;
+  const cartId = params.cartId.id;
+ console.log(params);
+
   await db.promise().query('DELETE FROM cart WHERE id = ?', [cartId]);
   return res.json({ message: 'cart deleted succesfully' });
 
@@ -309,7 +331,6 @@ app.post('/user/createCartFromLocal', async (req, res) => {
     // Create a new cart first and get the cart id
     const [newCart] = await db.promise().query('INSERT INTO cart (name, user_id, cost) VALUES (?, ?, ?)', ["NewCart", userId, 0]);
     const cartId = newCart.insertId;
-    console.log(cartId);
 
     // Perform operations to add items to the cart in the database
     // Assuming 'CartItems' table has columns: id (auto-increment), cart_id, product_id, quantity, cost
@@ -347,10 +368,9 @@ app.post('/user/createCartFromLocal', async (req, res) => {
 
 app.post('/user/updatedCartItemsQuantity', async (req, res) => {
   const { params } = req.body;
-  const cartId = params.cartId;
+  const cartId = params.cartId.id;
   const itemToUpdate = params.itemToUpdate;
   const newQuantity = params.newQuantity;
-
   try {
     let newTotalCost = 0;
 
@@ -359,12 +379,12 @@ app.post('/user/updatedCartItemsQuantity', async (req, res) => {
       // If the new quantity is greater than zero, calculate the new price
       const itemPrice = parseFloat(itemToUpdate.price); // Convert price to a floating-point number
       const newPrice = (itemPrice * newQuantity).toFixed(2);
-
       // Update the quantity and cost with the new values
       await db.promise().query('UPDATE cart_item SET counts = ?, cost = ? WHERE cart_id = ? AND product_id = ?', [newQuantity, newPrice, cartId, itemToUpdate.id]);
 
       // Calculate the new total cost after updating the item quantity and cost
       const [cartItems] = await db.promise().query('SELECT * FROM cart_item WHERE cart_id = ?', [cartId]);
+
       newTotalCost = cartItems.reduce((total, item) => total + parseFloat(item.cost), 0); // Calculate the sum of cost of all items
     } else {
       // If the new quantity is zero or negative, remove the item from the cart
@@ -372,10 +392,21 @@ app.post('/user/updatedCartItemsQuantity', async (req, res) => {
 
       // Calculate the new total cost after removing the item
       const [cartItems] = await db.promise().query('SELECT * FROM cart_item WHERE cart_id = ?', [cartId]);
-      newTotalCost = cartItems.reduce((total, item) => total + parseFloat(item.cost), 0); // Calculate the sum of cost of all items
+
+      if (!cartItems || cartItems.length === 0) {
+        // If cart_items are null or empty, delete the entire cart
+        await db.promise().query('DELETE FROM cart WHERE id = ?', [cartId]);
+        return res.json({delete: true, message: 'Cart deleted successfully' });
+      } else {
+
+        newTotalCost = cartItems.reduce((total, item) => total + parseFloat(item.cost), 0); // Calculate the sum of cost of all items
+
+      }
+
     }
 
     // Update the total cost in the cart table
+
     await db.promise().query('UPDATE cart SET cost = ? WHERE id = ?', [newTotalCost.toFixed(2), cartId]);
 
     return res.json({ message: 'Item updated in the cart successfully', newTotalCost });
@@ -407,7 +438,7 @@ app.post('/user/updatedCartItemsQuantity', async (req, res) => {
 // Modify the backend route to retrieve userId from query params
 app.get("/user/getUserOrders", async (req, res) => {
   let { userId } = req.query; // Get the userId from query parameter
-
+  console.log(userId);
   try {
     // Fetch user carts information using JOIN operation among cart, cart_item, and product tables
     const [orders] = await db
@@ -479,6 +510,7 @@ async function verifyAdmin(token) {
 
 app.get("/admin/getOrderInfo", async (req, res) => {
   let { token, orderId } = req.query; // Get the userId from query parameter
+  console.log(req.query);
   if (!verifyAdmin(token)) {
     res.status(501).json({ error: "Unauthorized" });
     return;
@@ -518,11 +550,8 @@ app.post('/user/getRecommendationsByTag', async (req, res) => {
   try {
     const { params } = req.body;
     const tags = params.tags;
-   
-// Step 1: Search user's most demanding tags (in order)
 
 
- // Get all tags into a single array
 
 const recommendedProducts = [];
 const uniqueProducts = new Set(); // Use a Set to maintain unique product IDs
@@ -533,7 +562,6 @@ const uniqueProducts = new Set(); // Use a Set to maintain unique product IDs
 
 for (const tag of tags) {
   const trimmedTag = tag.trim(); // Split tags into an array
- 
 
     // Using the recommendation by tag endpoint for each tag
     const [productsByTag] = await db.promise().query(`
@@ -543,7 +571,6 @@ for (const tag of tags) {
       WHERE FIND_IN_SET(?, product.tags) > 0
       GROUP BY product.id
     `, [trimmedTag]); // Use the trimmed tag
-
 
 
     productsByTag.forEach(product => {
@@ -620,7 +647,6 @@ for (const tag of userTags) {
 const sortedRecommendedProducts = recommendedProducts
   .sort((a, b) => b.weightedScore - a.weightedScore)
   .slice(0, 5);
-console.log(sortedRecommendedProducts);
 // Send the sorted recommended products as a response
 return res.json({ message: 'Recommended products retrieved successfully', recommendedProducts: sortedRecommendedProducts });
 } catch (error) {
@@ -831,7 +857,6 @@ app.get("/product/details/:id", async (req, res) => {
 
 app.post("/feedback/add", (req, res) => {
   const data = req.body.params
-  console.log(data);
 
   const product_id = data.productId;
   const {comment, rating} = data.review;
@@ -875,6 +900,7 @@ app.get("/feedback/get/product/:id", (req, res) => {
     f.id,
     f.comment,
     f.rating,
+    f.date,
     u.id AS user_id,
     u.email
 FROM

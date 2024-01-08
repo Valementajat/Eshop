@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Button, TextField, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { registerUser } from "../api/Api";
-import TopAppBar from '../components/AddbarComponent';
+import TopAppBar from '../components/ToolbarComponent';
 
 
 class Register extends Component {
