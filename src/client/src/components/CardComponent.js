@@ -43,7 +43,7 @@ const CardComponent = ({ data }) => {
               <Button variant="contained" onClick={() => handleAddToCart(item)}>
                 Add to Cart
               </Button>
-              {user && user.role === 'admin' && (
+              {/* {user && user.role === 'admin' && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -53,7 +53,7 @@ const CardComponent = ({ data }) => {
                 >
                   Edit
                 </Button>
-              )}
+              )} */}
             </CardContent>
           </Card>
         </Grid>

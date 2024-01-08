@@ -135,7 +135,7 @@ class OrderUpdate extends Component {
                     <MenuItem value="Invoiced">Invoiced</MenuItem>
                     <MenuItem value="In Delivery">In Delivery</MenuItem>
                     <MenuItem value="Completed">Completed</MenuItem>
-                    <MenuItem disabled="true" value="Canceled">
+                    <MenuItem disabled={true} value="Canceled">
                       Canceled
                     </MenuItem>
                   </Select>

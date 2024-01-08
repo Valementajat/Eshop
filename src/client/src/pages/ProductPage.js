@@ -41,7 +41,7 @@ const ProductPage = () => {
   const { addToCart } = useCart(); 
 
   const { id } = useParams();
-    const [localUser, setLocalUser] = useState(null)
+  const [localUser, setLocalUser] = useState(null)
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [userLeftReview, setUserLeftReview] = useState(false);
@@ -57,14 +57,19 @@ useEffect(() => {
   getProductAndReviews();
 
   // Set local user from localStorage
-  const localUser = JSON.parse(localStorage.getItem("user"));
-  setLocalUser(localUser);
-
-  // Check if the user left a review for the product
   const user = JSON.parse(localStorage.getItem("user"));
-  const userLeftReview = reviews.some((review) => review.user_id === user.id);
-  setUserLeftReview(userLeftReview);
-}, [ reviews]);
+  setLocalUser(user);
+  
+}, [id]);
+
+useEffect(() => {
+  if (localUser!==null) {
+
+    // Check if the user left a review for the product
+    const userLeftReview = reviews.some((review) => review.user_id === localUser.id);
+    setUserLeftReview(userLeftReview);
+    }
+}, [reviews, localUser]);
 
 
 
@@ -159,11 +164,12 @@ useEffect(() => {
         </Paper>
       )}
 
-      {reviews && (
+      {reviews && (reviews.length > 0 || localUser) && (
         <Paper style={{ padding: "16px", marginTop: "16px" }}>
           <Typography variant="h5">Reviews</Typography>
           <List>
-            {reviews.map((review) => (
+            {reviews.map((review) => {
+              return (
               <ListItem key={review.id}>
                 <ListItemText
                   primary={review.comment}
@@ -171,14 +177,14 @@ useEffect(() => {
                     review.date
                   ).toLocaleDateString()} | By ${review.email}`}
                 />
-                {localUser && localUser.role == "admin" && <Button    variant="contained"
+                {localUser && (localUser.role == "admin" || localUser.id === review.user_id) && <Button    variant="contained"
                 color="primary"
                 onClick={() => handleRemoveReview(review.id)}
                 style={{ marginTop: "16px" }}>Remove</Button>}
               </ListItem>
-            ))}
+            )})}
           </List>
-          { !userLeftReview && 
+          { !userLeftReview && localUser &&
             <Paper style={{ padding: "16px", marginTop: "16px" }}>
               <Typography variant="h6" style={{ marginTop: "16px" }}>
                 Add a Review

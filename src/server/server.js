@@ -136,36 +136,38 @@ app.post("/user/login", async (req, res) => {
   }
 });
 
+
+
+
 // Update user endpoint
-// app.put('/user/update', async (req, res) => {
+app.post('/user/verifyEmail', async (req, res) => {
 
-//   const { params } = req.body;
+  const { params } = req.body;
 
-//   try {
-//     // Check if the email and verification token match in the database
-//     const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
-//     console.log(users);
-//     if (users.length > 0) {
-//       const user = users[0];
+  try {
+    // Check if the email and verification token match in the database
+    const [users] = await db.promise().query('SELECT * FROM user WHERE email = ? AND verification_token = ?', [params.email, params.token]);
+    console.log(users);
+    if (users.length > 0) {
+      const user = users[0];
 
-//       if (user.activated) {
-//         // If the account is already activated, send back a 401 error
-//         return res.status(401).json({ message: "Account already activated" });
-//       }
+      if (user.activated) {
+        // If the account is already activated, send back a 401 error
+        return res.status(401).json({ message: "Account already activated" });
+      }
 
-//       // Update the 'activated' field to true
-//       res.status(400).json({ message: 'Invalid verification details' });
-//       await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
+      // Update the 'activated' field to true
+      await db.promise().query('UPDATE user SET activated = ? WHERE email = ?', [true, params.email]);
 
-//       res.json({ message: 'Verification successful' });
-//     } else {
-//       res.status(402).json({ message: 'Invalid verification details' });
-//     }
-//   } catch (error) {
-//     console.error("Error occurred during verification:", error);
-//     res.status(500).json({ message: "Error verifying email" });
-//   }
-// });
+      res.json({ message: 'Verification successful' });
+    } else {
+      res.status(402).json({ message: 'Invalid verification details' });
+    }
+  } catch (error) {
+    console.error("Error occurred during verification:", error);
+    res.status(500).json({ message: "Error verifying email" });
+  }
+});
 
 
 
@@ -174,9 +176,11 @@ app.put('/user/update', async (req, res) => {
 
   try {
     // Verify the token
+    console.log("Token: ",token);
     const decodedToken = jwt.verify(token, jwt_token);
     if (password != "") {
       // Update user information based on the decoded token
+
       await db
         .promise()
         .query(
@@ -195,9 +199,13 @@ app.put('/user/update', async (req, res) => {
     const [updatedUser] = await db
       .promise()
       .query("SELECT * FROM user WHERE id = ?", [decodedToken.id]);
-
+updatedUser[0].token = jwt.sign(
+  { id: updatedUser[0].id, email: updatedUser[0].email },
+  jwt_token
+); 
     res.json({ message: "User updated successfully", user: updatedUser[0] });
   } catch (error) {
+    console.log(error);
     res.status(401).json({ message: "Invalid token" });
   }
 });
@@ -430,7 +438,7 @@ app.post('/user/updatedCartItemsQuantity', async (req, res) => {
 // Modify the backend route to retrieve userId from query params
 app.get("/user/getUserOrders", async (req, res) => {
   let { userId } = req.query; // Get the userId from query parameter
-
+  console.log(userId);
   try {
     // Fetch user carts information using JOIN operation among cart, cart_item, and product tables
     const [orders] = await db
@@ -502,6 +510,7 @@ async function verifyAdmin(token) {
 
 app.get("/admin/getOrderInfo", async (req, res) => {
   let { token, orderId } = req.query; // Get the userId from query parameter
+  console.log(req.query);
   if (!verifyAdmin(token)) {
     res.status(501).json({ error: "Unauthorized" });
     return;
@@ -891,6 +900,7 @@ app.get("/feedback/get/product/:id", (req, res) => {
     f.id,
     f.comment,
     f.rating,
+    f.date,
     u.id AS user_id,
     u.email
 FROM
