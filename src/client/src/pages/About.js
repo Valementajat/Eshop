@@ -19,16 +19,16 @@ class About extends Component {
             <div>
             <div>
               <span>
-                <strong>Full Name: </strong> sadasda
+                <strong>Full Name: </strong> Johannes Takamäki
               </span>
             </div>
             
               <span>
-                <strong>title: </strong> Programmer
+                <strong>title: </strong> Director of Software Development
               </span>
             <div>
               <span>
-                <strong>Email: </strong> @gmail.com
+                <strong>Email: </strong> JTAKAM@upv.edu.es
               </span>
             
              <p/>
@@ -36,16 +36,16 @@ class About extends Component {
 
             <div>
               <span>
-                <strong>Full Name: </strong> sadasda
+                <strong>Full Name: </strong> Jan Horák
               </span>
             </div>
             
               <span>
-                <strong>title: </strong> Programmer
+                <strong>title: </strong> Contract Software Engineer
               </span>
             <div>
               <span>
-                <strong>Email: </strong> @gmail.com
+                <strong>Email: </strong> HORAK@gmail.com
               </span>
             
              <p/>
@@ -53,16 +53,16 @@ class About extends Component {
 
             <div>
               <span>
-                <strong>Full Name: </strong> sadasda
+                <strong>Full Name: </strong> Joel
               </span>
             </div>
             
               <span>
-                <strong>title: </strong> Programmer
+                <strong>title: </strong> Intern
               </span>
             <div>
               <span>
-                <strong>Email: </strong> @gmail.com
+                <strong>Email: </strong> Joel@gmail.com
               </span>
             
              <p/>
@@ -70,37 +70,22 @@ class About extends Component {
 
             <div>
               <span>
-                <strong>Full Name: </strong> sadasda
+                <strong>Full Name: </strong> Shadi
               </span>
             </div>
             
               <span>
-                <strong>title: </strong> Programmer
+                <strong>title: </strong> Intern
               </span>
             <div>
               <span>
-                <strong>Email: </strong> @gmail.com
+                <strong>Email: </strong> Chad@gmail.com
               </span>
             
              <p/>
             </div>
 
-            <div>
-              <span>
-                <strong>Full Name: </strong> sadasda
-              </span>
-            </div>
-            
-              <span>
-                <strong>title: </strong> Programmer
-              </span>
-            <div>
-              <span>
-                <strong>Email: </strong> @gmail.com
-              </span>
-            
-             <p/>
-            </div>
+         
             <div>
               <span>
                 <strong>Full Name: </strong> Muhannad Alqayem
@@ -121,6 +106,8 @@ class About extends Component {
             
             <hr />
           </div>
+
+
 
       </div>
     );

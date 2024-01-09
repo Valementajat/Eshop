@@ -1,71 +1,31 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
+import { Typography, Divider, Box } from "@mui/material";
 
-const FORM_ENDPOINT = "https://herotofu.com/start"; // TODO - update to the correct endpoint
-
-const ContactForm = () => {
-  const [submitted, setSubmitted] = useState(false);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const inputs = e.target.elements;
-    const data = {};
-
-    for (let i = 0; i < inputs.length; i++) {
-      if (inputs[i].name) {
-        data[inputs[i].name] = inputs[i].value;
-      }
-    }
-
-    fetch(FORM_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Form response was not ok');
-        }
-
-        setSubmitted(true);
-      })
-      .catch((err) => {
-        // Submit the form manually
-        e.target.submit();
-      });
-  };
-
-  if (submitted) {
+class ContactForm extends Component {
+  render() {
     return (
-      <>
-        <h2>Thank you!</h2>
-        <div>We'll be in touch soon.</div>
-      </>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        height="30vh"
+      >
+        <div>
+          <Typography variant="h5" gutterBottom>
+            Contact Coffee2Go
+          </Typography>
+          <Typography variant="body1">
+            Address: 123 Coffee Street, Alcoy, Spain
+          </Typography>
+          <Typography variant="body1">Phone: +34 123 456 789</Typography>
+          <Typography variant="body1">Email: info@coffee2go.com</Typography>
+          <Divider style={{ margin: "20px 0" }} />
+          {/* Add more Material-UI components or sections as needed */}
+        </div>
+      </Box>
     );
   }
-
-  return (
-    <form
-      action={FORM_ENDPOINT}
-      onSubmit={handleSubmit}
-      method="POST"
-    >
-      <div>
-        <input type="text" placeholder="Your name" name="name" required />
-      </div>
-      <div>
-        <input type="email" placeholder="Email" name="email" required />
-      </div>
-      <div>
-        <textarea placeholder="Your message" name="message" required />
-      </div>
-      <div>
-        <button type="submit"> Send a message </button>
-      </div>
-    </form>
-  );
-};
+}
 
 export default ContactForm;

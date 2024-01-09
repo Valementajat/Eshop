@@ -18,6 +18,7 @@ import ProductPage from './pages/ProductPage';
 import ToolbarComponent from "./components/ToolbarComponent";
 import { CartProvider } from './CartContext';
 import About from './pages/About';
+import ContactForm from './components/Contacts';
 
 
 const root = createRoot(document.getElementById('root'));
@@ -44,8 +45,10 @@ root.render(
 
           <Route exact path="/orders/:id" element={<OrderDetail />} />
           <Route exact path="/product/:id" element={<ProductPage />} />
-
+          
           <Route exact path="/About" element={<About />} />
+          <Route exact path="/Contacts" element={<ContactForm />} />
+
         </Routes>
         <Ufooter />
       </Router>
