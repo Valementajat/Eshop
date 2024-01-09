@@ -10,13 +10,15 @@ import AccountUpdate from './pages/AccountUpdate';
 import VerifyEmail from './pages/VerifyEmail';
 import ManageOrders from './pages/ManageOrders';
 import OrderUpdate from './pages/OrderUpdate';
-import Ufooter from "./components/Footer";
+import Ufooter from "./components/footer";
 import CartDetail from './pages/CartDetail';
 import Cart from './pages/Cart';
 import OrderDetail from './pages/OrderDetail';
 import ProductPage from './pages/ProductPage';
 import ToolbarComponent from "./components/ToolbarComponent";
 import { CartProvider } from './CartContext';
+import About from './pages/About';
+
 
 const root = createRoot(document.getElementById('root'));
 
@@ -42,6 +44,8 @@ root.render(
 
           <Route exact path="/orders/:id" element={<OrderDetail />} />
           <Route exact path="/product/:id" element={<ProductPage />} />
+
+          <Route exact path="/About" element={<About />} />
         </Routes>
         <Ufooter />
       </Router>
